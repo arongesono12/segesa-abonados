@@ -1,8 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
-import { Platform } from 'react-native';
 
 export async function saveSecureItem(key: string, value: string) {
-  if (Platform.OS === 'web') {
+  if (process.env.EXPO_OS === 'web') {
     localStorage.setItem(key, value);
     return;
   }
@@ -11,7 +10,7 @@ export async function saveSecureItem(key: string, value: string) {
 }
 
 export async function getSecureItem(key: string) {
-  if (Platform.OS === 'web') {
+  if (process.env.EXPO_OS === 'web') {
     return localStorage.getItem(key);
   }
 
@@ -19,7 +18,7 @@ export async function getSecureItem(key: string) {
 }
 
 export async function deleteSecureItem(key: string) {
-  if (Platform.OS === 'web') {
+  if (process.env.EXPO_OS === 'web') {
     localStorage.removeItem(key);
     return;
   }

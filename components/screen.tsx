@@ -1,6 +1,5 @@
 import { PropsWithChildren } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
 
 import { colors } from '@/theme/colors';
 import { nativeUI, useNativeLayout } from '@/theme/native-ui';
@@ -20,11 +19,20 @@ export function Screen({ children, scroll = true, topInset = false }: ScreenProp
   );
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={edges}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
-        {scroll ? <ScrollView contentContainerStyle={styles.scroll}>{content}</ScrollView> : content}
+    <View style={styles.safeArea}>
+      <KeyboardAvoidingView behavior={process.env.EXPO_OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
+        {scroll ? (
+          <ScrollView
+            contentInsetAdjustmentBehavior="automatic"
+            contentContainerStyle={styles.scroll}
+          >
+            {content}
+          </ScrollView>
+        ) : (
+          content
+        )}
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -40,12 +48,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   content: {
-    flex: 1,
-    gap: nativeUI.sectionGap,
-    padding: nativeUI.screenPadding,
-    width: '100%',
-  },
-  wideContent: {
-    alignSelf: 'center',
+    gap: 18,
+    padding: 20,
   },
 });

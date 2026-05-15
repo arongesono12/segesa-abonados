@@ -60,6 +60,7 @@ export default function RootLayout() {
             fontWeight: '700',
           },
           contentStyle: { backgroundColor: colors.background },
+          headerBackButtonDisplayMode: 'minimal',
         }}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />

@@ -1,6 +1,5 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Redirect, Tabs } from 'expo-router';
-import { Platform } from 'react-native';
+import { PlatformColor } from 'react-native';
+import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
 
 import { FullScreenLoader } from '@/components/full-screen-loader';
 import { useAuth } from '@/features/auth/auth-context';
@@ -19,61 +18,53 @@ export default function TabsLayout() {
   const { isAuthenticated, isLoading, needsOnboarding } = useAuth();
   const { isTablet, tabBarHeight } = useNativeLayout();
 
-  if (isLoading) return <FullScreenLoader label="Cargando información..." />;
-  if (!isAuthenticated) return <Redirect href="/(auth)/welcome" />;
-  if (needsOnboarding) return <Redirect href="/onboarding/provider" />;
+  if (isLoading) {
+    return <FullScreenLoader label="Cargando información..." />;
+  }
+
+  if (!isAuthenticated) {
+    const { Redirect } = require('expo-router');
+    return <Redirect href="/(auth)/welcome" />;
+  }
+
+  if (needsOnboarding) {
+    const { Redirect } = require('expo-router');
+    return <Redirect href="/onboarding/provider" />;
+  }
 
   return (
-    <Tabs
+    <NativeTabs
+      screenListeners={{
+        tabPress: (e: any) => {
+          // Haptic feedback for tab presses
+          if (process.env.EXPO_OS === 'ios') {
+            require('expo-haptics').impactAsync(require('expo-haptics').ImpactFeedbackStyle.Light);
+          }
+        },
+      }}
       screenOptions={{
-        ...platformTabHeaderOptions(),
-        headerStyle: {
-          backgroundColor: colors.surface,
-        },
-        headerShadowVisible: false,
-        headerTintColor: colors.primary,
-        headerTitleStyle: {
-          color: colors.text,
-          fontFamily: nativeUI.fontBold,
-          fontWeight: '700',
-          fontSize: Platform.select({ ios: 17, android: 18, default: 17 }),
-        },
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.muted,
-        tabBarLabelPosition: isTablet ? 'beside-icon' : 'below-icon',
-        tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
-          borderTopWidth: 0.5,
-          height: tabBarHeight,
-          ...Platform.select({
-            android: { elevation: 8 },
-            ios: {},
-            default: {},
-          }),
-        },
-        tabBarLabelStyle: {
-          fontFamily: nativeUI.fontMedium,
-          fontSize: isTablet ? 13 : 11,
-          fontWeight: '500',
-          marginBottom: Platform.select({ ios: 0, android: 4, default: 0 }),
-        },
-        tabBarIconStyle: {
-          marginTop: Platform.select({ ios: 0, android: 2, default: 0 }),
-        },
+        headerShown: false,
       }}>
-      {TAB_SCREENS.map(({ name, title, icon }) => (
-        <Tabs.Screen
-          key={name}
-          name={name}
-          options={{
-            title,
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name={icon} color={color} size={isTablet ? size + 2 : size} />
-            ),
-          }}
-        />
-      ))}
-    </Tabs>
+      <NativeTabs.Trigger name="index">
+        <Icon sf="house.fill" />
+        <Label>Inicio</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="invoices">
+        <Icon sf="doc.text.fill" />
+        <Label>Facturas</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="history">
+        <Icon sf="clock.fill" />
+        <Label>Historial</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="accounts">
+        <Icon sf="bolt.fill" />
+        <Label>Cuentas</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="profile">
+        <Icon sf="person.fill" />
+        <Label>Perfil</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 }

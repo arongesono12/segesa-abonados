@@ -1,101 +1,58 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { ActivityIndicator, Image, Pressable, Text, ViewStyle } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
 import { colors } from '@/theme/colors';
 import { nativeUI } from '@/theme/native-ui';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const AnimatedText = Animated.createAnimatedComponent(Text);
+const AnimatedImage = Animated.createAnimatedComponent(Image);
+
 type AppButtonProps = {
   title: string;
   onPress: () => void;
-  variant?: Variant;
-  icon?: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  sfIcon?: string;
   loading?: boolean;
   disabled?: boolean;
   style?: ViewStyle;
   fullWidth?: boolean;
 };
 
-const variantTextColor: Record<Variant, string> = {
-  primary: colors.surface,
-  secondary: colors.primary,
-  ghost: colors.primary,
-  danger: colors.danger,
-};
-
-const variantIconColor: Record<Variant, string> = {
-  primary: colors.surface,
-  secondary: colors.primary,
-  ghost: colors.primary,
-  danger: colors.danger,
-};
-
-function triggerHaptic(variant: Variant) {
-  if (Platform.OS !== 'ios') return;
-  if (variant === 'primary') {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-  } else if (variant === 'danger') {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-  } else {
-    Haptics.selectionAsync();
-  }
-}
-
-export function AppButton({
-  title,
-  onPress,
-  variant = 'primary',
-  icon,
-  loading,
-  disabled,
-  style,
-  fullWidth,
-}: AppButtonProps) {
+export function AppButton({ title, onPress, variant = 'primary', sfIcon, loading, disabled, style }: AppButtonProps) {
   const isDisabled = disabled || loading;
-  const textColor = variantTextColor[variant];
-  const iconColor = variantIconColor[variant];
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = () => {
+    if (!isDisabled) {
+      scale.value = withSpring(0.96);
+    }
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1);
+  };
 
   const handlePress = () => {
-    triggerHaptic(variant);
+    if (process.env.EXPO_OS === 'ios') {
+      const haptics = require('expo-haptics');
+      haptics.impactAsync(haptics.ImpactFeedbackStyle.Medium);
+    }
     onPress();
   };
 
-  const content = loading ? (
-    <ActivityIndicator color={variant === 'primary' ? colors.surface : colors.primary} size="small" />
-  ) : (
-    <>
-      {icon ? <MaterialCommunityIcons name={icon as keyof typeof MaterialCommunityIcons.glyphMap} size={18} color={iconColor} /> : null}
-      <Text adjustsFontSizeToFit numberOfLines={1} style={[styles.text, { color: textColor }]}>
-        {title}
-      </Text>
-    </>
-  );
-
-  // iOS primary: outer View carries shadow so overflow:hidden on inner Pressable doesn't clip it
-  if (Platform.OS === 'ios' && variant === 'primary') {
-    return (
-      <View style={[styles.shadowWrap, fullWidth && styles.fullWidth, nativeUI.buttonShadow, style]}>
-        <Pressable
-          accessibilityRole="button"
-          disabled={isDisabled}
-          onPress={handlePress}
-          style={({ pressed }) => [
-            styles.base,
-            styles.primary,
-            styles.clip,
-            isDisabled && styles.disabled,
-            pressed && !isDisabled && styles.pressed,
-          ]}>
-          {content}
-        </Pressable>
-      </View>
-    );
-  }
-
   return (
-    <Pressable
+    <AnimatedPressable
       accessibilityRole="button"
       android_ripple={
         variant === 'primary'
@@ -106,70 +63,49 @@ export function AppButton({
       }
       disabled={isDisabled}
       onPress={handlePress}
-      style={({ pressed }) => [
-        styles.base,
-        styles[variant],
-        fullWidth && styles.fullWidth,
-        variant === 'primary' && nativeUI.buttonShadow,
-        styles.clip,
-        isDisabled && styles.disabled,
-        Platform.OS !== 'android' && pressed && !isDisabled && styles.pressed,
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      style={[
+        {
+          alignItems: 'center',
+          backgroundColor: variant === 'primary' ? colors.primary : variant === 'secondary' ? colors.surfaceAlt : 'transparent',
+          borderColor: variant === 'secondary' ? colors.border : 'transparent',
+          borderRadius: 8,
+          borderCurve: 'continuous',
+          borderWidth: variant === 'secondary' ? 1 : 0,
+          flexDirection: 'row',
+          gap: 8,
+          height: 52,
+          justifyContent: 'center',
+          paddingHorizontal: 16,
+          opacity: isDisabled ? 0.55 : 1,
+        },
+        animatedStyle,
         style,
       ]}>
-      {content}
-    </Pressable>
+      {loading ? (
+        <ActivityIndicator color={variant === 'primary' ? colors.surface : colors.primary} />
+      ) : (
+        <>
+          {sfIcon ? (
+            <AnimatedImage
+              source={{ uri: `sf=${sfIcon}` }}
+              style={{
+                width: 19,
+                height: 19,
+                tintColor: variant === 'primary' ? colors.surface : colors.primary,
+              }}
+            />
+          ) : null}
+          <AnimatedText style={{
+            color: variant === 'primary' ? colors.surface : colors.primary,
+            fontSize: 16,
+            fontWeight: '700',
+          }}>
+            {title}
+          </AnimatedText>
+        </>
+      )}
+    </AnimatedPressable>
   );
 }
-
-const styles = StyleSheet.create({
-  shadowWrap: {
-    borderRadius: nativeUI.radius,
-  },
-  fullWidth: {
-    width: '100%',
-  },
-  base: {
-    alignItems: 'center',
-    borderRadius: nativeUI.radius,
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'center',
-    minHeight: nativeUI.controlHeight,
-    paddingHorizontal: 20,
-    ...(Platform.OS === 'web' ? { cursor: 'pointer' } : {}),
-    ...(Platform.OS === 'ios' ? { borderCurve: 'continuous' } : {}),
-  },
-  clip: {
-    overflow: 'hidden',
-  },
-  primary: {
-    backgroundColor: colors.primary,
-  },
-  secondary: {
-    backgroundColor: colors.surfaceAlt,
-    borderColor: colors.border,
-    borderWidth: 1.5,
-  },
-  ghost: {
-    backgroundColor: 'transparent',
-  },
-  danger: {
-    backgroundColor: '#FEF2F2',
-    borderColor: colors.danger,
-    borderWidth: 1.5,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.82,
-    transform: [{ scale: 0.985 }],
-  },
-  text: {
-    fontFamily: nativeUI.fontBold,
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0,
-    maxWidth: '100%',
-  },
-});

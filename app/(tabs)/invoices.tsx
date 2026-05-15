@@ -1,64 +1,40 @@
-import { router } from 'expo-router';
-import { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback } from 'react';
+import { ActivityIndicator, Text } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { EmptyState } from '@/components/empty-state';
 import { InvoiceCard } from '@/components/invoice-card';
 import { Screen } from '@/components/screen';
-import { sharedStyles } from '@/components/shared-styles';
 import { useApiResource } from '@/hooks/use-api-resource';
 import { electricityApi } from '@/services/electricity-api';
 import { colors } from '@/theme/colors';
 import { fontBase, nativeUI } from '@/theme/native-ui';
 
-type Tab = 'pending' | 'paid';
+const AnimatedText = Animated.createAnimatedComponent(Text);
 
-export default function InvoicesScreen() {
-  const [activeTab, setActiveTab] = useState<Tab>('pending');
-
-  const loadPending = useCallback(() => electricityApi.getPendingInvoices(), []);
-  const loadPaid = useCallback(() => electricityApi.getPaidInvoices(), []);
-
-  const pendingResource = useApiResource(loadPending);
-  const paidResource = useApiResource(loadPaid);
-
-  const { data: invoices, isLoading, error } = activeTab === 'pending' ? pendingResource : paidResource;
-
-  const tabs: { id: Tab; label: string }[] = [
-    { id: 'pending', label: 'Pendientes' },
-    { id: 'paid', label: 'Pagadas' },
-  ];
+export default function PendingInvoicesScreen() {
+  const loadInvoices = useCallback(() => electricityApi.getPendingInvoices(), []);
+  const { data: invoices, isLoading, error } = useApiResource(loadInvoices);
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <Text style={sharedStyles.title}>Facturas</Text>
-        <Text style={sharedStyles.subtitle}>Selecciona una factura para revisar el detalle o completar el pago.</Text>
-      </View>
-
-      <View style={styles.segmentBar}>
-        {tabs.map((tab) => (
-          <Pressable
-            key={tab.id}
-            onPress={() => setActiveTab(tab.id)}
-            style={[styles.segment, activeTab === tab.id && styles.segmentActive]}>
-            <Text style={[styles.segmentLabel, activeTab === tab.id && styles.segmentLabelActive]}>
-              {tab.label}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
-
+      <AnimatedText
+        style={{ color: colors.text, fontSize: 30, fontWeight: '800', lineHeight: 36 }}
+        entering={FadeIn.duration(300)}>
+        Facturas pendientes
+      </AnimatedText>
+      <AnimatedText
+        style={{ color: colors.textSoft, fontSize: 16, lineHeight: 24 }}
+        entering={FadeIn.duration(300).delay(50)}>
+        Selecciona una factura para revisar el detalle y completar el pago.
+      </AnimatedText>
       {isLoading ? <ActivityIndicator color={colors.primary} /> : null}
-      {error ? <EmptyState icon="alert-outline" title="No se pudieron cargar" message={error} /> : null}
+      {error ? <EmptyState sfIcon="exclamationmark.triangle.fill" title="No se pudieron cargar" message={error} /> : null}
       {!isLoading && !error && invoices?.length === 0 ? (
-        <EmptyState
-          title={activeTab === 'pending' ? 'Todo al día' : 'Sin facturas pagadas'}
-          message={activeTab === 'pending' ? 'No tienes facturas pendientes.' : 'Las facturas pagadas aparecerán aquí.'}
-        />
+        <EmptyState sfIcon="checkmark.circle.fill" title="Todo al día" message="No tienes facturas pendientes." />
       ) : null}
-      {invoices?.map((invoice) => (
-        <InvoiceCard key={invoice.id} invoice={invoice} onPress={() => router.push(`/invoice/${invoice.id}`)} />
+      {invoices?.map((invoice, index) => (
+        <InvoiceCard key={invoice.id} invoice={invoice} index={index} />
       ))}
     </Screen>
   );

@@ -1,16 +1,18 @@
-import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { AppButton } from '@/components/app-button';
 import { EmptyState } from '@/components/empty-state';
 import { Screen } from '@/components/screen';
-import { ScreenHeader } from '@/components/screen-header';
 import { useApiResource } from '@/hooks/use-api-resource';
 import { electricityApi } from '@/services/electricity-api';
 import { colors } from '@/theme/colors';
 import { fontBase, nativeUI } from '@/theme/native-ui';
 import { ElectricityProvider } from '@/types/domain';
+
+const AnimatedView = Animated.createAnimatedComponent(View);
+const AnimatedText = Animated.createAnimatedComponent(Text);
 
 export default function ProviderScreen() {
   const [selectedProvider, setSelectedProvider] = useState<ElectricityProvider | null>(null);
@@ -18,23 +20,31 @@ export default function ProviderScreen() {
   const { data, isLoading, error, refetch } = useApiResource(loadProviders);
 
   const continueToAccount = () => {
-    if (selectedProvider) {
-      router.push({ pathname: '/onboarding/account', params: { providerId: selectedProvider.id } });
+    if (selectedProvider && process.env.EXPO_OS === 'ios') {
+      const haptics = require('expo-haptics');
+      haptics.impactAsync(haptics.ImpactFeedbackStyle.Medium);
     }
   };
 
   return (
     <Screen>
-      <ScreenHeader title="Elige tu proveedor" subtitle="Selecciona la empresa que emite tus facturas de electricidad." />
+      <AnimatedView style={{ gap: 10 }} entering={FadeIn.duration(300)}>
+        <Text style={{ color: colors.text, fontSize: 30, fontWeight: '800', lineHeight: 36 }}>
+          Elige tu proveedor
+        </Text>
+        <Text style={{ color: colors.textSoft, fontSize: 16, lineHeight: 24 }}>
+          Selecciona la empresa que emite tus facturas de electricidad.
+        </Text>
+      </AnimatedView>
 
       {isLoading ? <ActivityIndicator color={colors.primary} /> : null}
-      {error ? <EmptyState icon="alert-outline" title="No pudimos cargar proveedores" message={error} /> : null}
+      {error ? <EmptyState sfIcon="exclamationmark.triangle.fill" title="No pudimos cargar proveedores" message={error} /> : null}
       {!isLoading && !error && data?.length === 0 ? (
-        <EmptyState title="Sin proveedores disponibles" message="Inténtalo de nuevo más tarde." />
+        <EmptyState sfIcon="square.grid.3x3" title="Sin proveedores disponibles" message="Inténtalo de nuevo más tarde." />
       ) : null}
 
-      <View style={styles.list}>
-        {data?.map((provider) => {
+      <AnimatedView style={{ gap: 12 }} entering={FadeIn.duration(300).delay(100)}>
+        {data?.map((provider, index) => {
           const selected = selectedProvider?.id === provider.id;
 
           return (
@@ -42,13 +52,37 @@ export default function ProviderScreen() {
               accessibilityRole="button"
               key={provider.id}
               onPress={() => setSelectedProvider(provider)}
-              style={({ pressed }) => [styles.providerCard, selected && styles.selectedCard, pressed && styles.pressed]}>
-              <View style={[styles.logo, { backgroundColor: provider.logoColor }]}>
-                <Text style={styles.logoText}>{provider.name.slice(0, 2).toUpperCase()}</Text>
+              style={{
+                alignItems: 'center',
+                backgroundColor: colors.surface,
+                borderColor: selected ? colors.primary : colors.border,
+                borderRadius: 8,
+                borderCurve: 'continuous',
+                borderWidth: selected ? 2 : 1,
+                flexDirection: 'row',
+                gap: 14,
+                padding: 14,
+              }}>
+              <View style={{
+                alignItems: 'center',
+                backgroundColor: provider.logoColor,
+                borderRadius: 8,
+                borderCurve: 'continuous',
+                height: 46,
+                justifyContent: 'center',
+                width: 46,
+              }}>
+                <Text style={{ color: colors.surface, fontWeight: '900' }}>
+                  {provider.name.slice(0, 2).toUpperCase()}
+                </Text>
               </View>
-              <View style={styles.providerInfo}>
-                <Text style={styles.providerName}>{provider.name}</Text>
-                <Text style={styles.providerMeta}>{provider.country} · {provider.supportPhone}</Text>
+              <View style={{ flex: 1, gap: 4 }}>
+                <Text style={{ color: colors.text, fontSize: 16, fontWeight: '800' }}>
+                  {provider.name}
+                </Text>
+                <Text style={{ color: colors.muted, fontSize: 13 }}>
+                  {provider.country} · {provider.supportPhone}
+                </Text>
               </View>
               <View style={[styles.selectionMark, selected && styles.selectionMarkSelected]}>
                 {selected ? <Text style={styles.selectionText}>✓</Text> : null}
@@ -56,88 +90,12 @@ export default function ProviderScreen() {
             </Pressable>
           );
         })}
-      </View>
+      </AnimatedView>
 
-      <View style={styles.footer}>
-        <AppButton title="Continuar" disabled={!selectedProvider} fullWidth onPress={continueToAccount} />
-        {error ? <AppButton title="Reintentar" variant="secondary" onPress={refetch} /> : null}
-      </View>
+      <AnimatedView style={{ gap: 10 }} entering={FadeIn.duration(300).delay(150)}>
+        <AppButton title="Continuar" disabled={!selectedProvider} onPress={continueToAccount} />
+        {error ? <AppButton title="Reintentar" sfIcon="arrow.clockwise" variant="secondary" onPress={refetch} /> : null}
+      </AnimatedView>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  list: {
-    gap: 12,
-  },
-  providerCard: {
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-    borderRadius: nativeUI.radius,
-    borderWidth: 1,
-    flexDirection: 'row',
-    gap: 14,
-    padding: 14,
-    ...nativeUI.curveStyle,
-    ...nativeUI.cardShadow,
-  },
-  selectedCard: {
-    borderColor: colors.primary,
-    borderWidth: 2,
-  },
-  pressed: {
-    opacity: 0.78,
-  },
-  logo: {
-    alignItems: 'center',
-    borderRadius: nativeUI.compactRadius,
-    height: 48,
-    justifyContent: 'center',
-    width: 48,
-    ...nativeUI.curveStyle,
-  },
-  logoText: {
-    color: colors.surface,
-    fontFamily: nativeUI.fontBlack,
-    fontWeight: '900',
-  },
-  providerInfo: {
-    flex: 1,
-    gap: 4,
-  },
-  providerName: {
-    color: colors.text,
-    fontFamily: nativeUI.fontBlack,
-    fontSize: 16,
-    fontWeight: '900',
-  },
-  providerMeta: {
-    ...fontBase,
-    color: colors.muted,
-    fontSize: 13,
-  },
-  selectionMark: {
-    alignItems: 'center',
-    borderColor: colors.border,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    height: 24,
-    justifyContent: 'center',
-    width: 24,
-  },
-  selectionMarkSelected: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  selectionText: {
-    color: colors.surface,
-    fontFamily: nativeUI.fontBlack,
-    fontSize: 13,
-    fontWeight: '900',
-  },
-  footer: {
-    gap: 10,
-    marginTop: 'auto',
-  },
-});

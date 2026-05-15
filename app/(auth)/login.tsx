@@ -1,14 +1,11 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { router } from 'expo-router';
+import { Link } from 'expo-router';
 import { useState } from 'react';
-import { Image, Platform, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { AppTextField } from '@/components/app-text-field';
 import { Screen } from '@/components/screen';
-import { ScreenHeader } from '@/components/screen-header';
-import { sharedStyles } from '@/components/shared-styles';
-import { TextLink } from '@/components/text-link';
 import { useAuth } from '@/features/auth/auth-context';
 import { colors } from '@/theme/colors';
 import { fontBase, nativeUI } from '@/theme/native-ui';
@@ -30,7 +27,10 @@ export default function LoginScreen() {
     try {
       setLoadingAction('email');
       await login(email, password);
-      router.replace('/');
+      if (process.env.EXPO_OS === 'ios') {
+        const haptics = require('expo-haptics');
+        haptics.notificationAsync(haptics.NotificationFeedbackType.Success);
+      }
     } catch (caughtError) {
       setError(getErrorMessage(caughtError));
     } finally {
@@ -43,7 +43,10 @@ export default function LoginScreen() {
     setLoadingAction('google');
     try {
       await socialLogin('google', 'google.user@demo.com', 'Usuario Google');
-      router.replace('/');
+      if (process.env.EXPO_OS === 'ios') {
+        const haptics = require('expo-haptics');
+        haptics.notificationAsync(haptics.NotificationFeedbackType.Success);
+      }
     } catch (caughtError) {
       setError(getErrorMessage(caughtError));
     } finally {
@@ -55,7 +58,7 @@ export default function LoginScreen() {
     setError('');
     setLoadingAction('apple');
     try {
-      if (Platform.OS === 'ios') {
+      if (process.env.EXPO_OS === 'ios') {
         await AppleAuthentication.signInAsync({
           requestedScopes: [
             AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
@@ -64,7 +67,10 @@ export default function LoginScreen() {
         });
       }
       await socialLogin('apple', 'apple.user@demo.com', 'Usuario Apple');
-      router.replace('/');
+      if (process.env.EXPO_OS === 'ios') {
+        const haptics = require('expo-haptics');
+        haptics.notificationAsync(haptics.NotificationFeedbackType.Success);
+      }
     } catch (caughtError) {
       setError(getErrorMessage(caughtError));
     } finally {
@@ -74,12 +80,16 @@ export default function LoginScreen() {
 
   return (
     <Screen>
-      <View style={styles.identity}>
-        <Image source={require('@/assets/images/icon.png')} style={styles.logo} />
-        <ScreenHeader title="Bienvenido de nuevo" subtitle="Accede para consultar y pagar tus facturas." />
+      <View style={{ gap: 10, marginTop: 24 }}>
+        <Text style={{ color: colors.text, fontSize: 30, fontWeight: '800', lineHeight: 36 }}>
+          Bienvenido de nuevo
+        </Text>
+        <Text style={{ color: colors.textSoft, fontSize: 16, lineHeight: 24 }}>
+          Accede para consultar y pagar tus facturas de electricidad.
+        </Text>
       </View>
 
-      <View style={styles.formCard}>
+      <View style={{ gap: 14 }}>
         <AppTextField
           autoCapitalize="none"
           autoComplete="email"
@@ -90,134 +100,28 @@ export default function LoginScreen() {
           textContentType="emailAddress"
           value={email}
         />
-        <View style={styles.fieldDivider} />
-        <AppTextField
-          autoComplete="current-password"
-          label="Contraseña"
-          onChangeText={setPassword}
-          returnKeyType="go"
-          secureTextEntry
-          textContentType="password"
-          value={password}
-        />
+        <AppTextField label="Contraseña" onChangeText={setPassword} secureTextEntry value={password} />
+        {error ? <Text style={{ color: colors.danger, fontSize: 13 }}>{error}</Text> : null}
+        <AppButton title="Entrar" loading={loadingAction === 'email'} onPress={handleLogin} />
       </View>
 
-      {error ? <Text style={sharedStyles.errorText}>{error}</Text> : null}
-
-      <AppButton
-        title="Entrar"
-        icon="login"
-        loading={loadingAction === 'email'}
-        onPress={handleLogin}
-      />
-
-      <View style={styles.divider}>
-        <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>o continúa con</Text>
-        <View style={styles.dividerLine} />
+      <View style={{ gap: 10 }}>
+        <AppButton title="Continuar con Google" sfIcon="globe" variant="secondary" loading={loadingAction === 'google'} onPress={handleGoogleLogin} />
+        <AppButton title="Continuar con Apple" sfIcon="apple.logo" variant="secondary" loading={loadingAction === 'apple'} onPress={handleAppleLogin} />
       </View>
 
-      <View style={styles.social}>
-        <AppButton
-          title="Continuar con Google"
-          icon="google"
-          variant="secondary"
-          loading={loadingAction === 'google'}
-          onPress={handleGoogleLogin}
-          fullWidth
-        />
-        {Platform.OS === 'ios' ? (
-          <AppleAuthentication.AppleAuthenticationButton
-            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-            buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-            cornerRadius={nativeUI.radius}
-            onPress={handleAppleLogin}
-            style={styles.appleBtn}
-          />
-        ) : (
-          <AppButton
-            title="Continuar con Apple"
-            icon="apple"
-            variant="secondary"
-            loading={loadingAction === 'apple'}
-            onPress={handleAppleLogin}
-            fullWidth
-          />
-        )}
-      </View>
-
-      <View style={styles.footer}>
-        <TextLink
-          title="Olvidé mi contraseña"
-          onPress={() => router.push('/(auth)/forgot-password')}
-        />
-        <Text style={styles.footerText}>¿No tienes cuenta?</Text>
-        <TextLink title="Crear cuenta" onPress={() => router.push('/(auth)/register')} />
+      <View style={{ alignItems: 'center', gap: 6 }}>
+        <Link href="/(auth)/forgot-password" asChild>
+          <AppButton title="Recuperar contraseña" variant="ghost" onPress={() => {}} />
+        </Link>
+        <Link href="/(auth)/register" asChild>
+          <Pressable>
+            <Text style={{ color: colors.primary, fontSize: 15, fontWeight: '700' }}>
+              No tengo cuenta, registrarme
+            </Text>
+          </Pressable>
+        </Link>
       </View>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  identity: {
-    gap: 16,
-    marginTop: 8,
-  },
-  logo: {
-    borderRadius: 14,
-    height: 56,
-    width: 56,
-    ...(Platform.OS === 'ios' ? { borderCurve: 'continuous' } : {}),
-  },
-  formCard: {
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-    borderRadius: nativeUI.radius,
-    borderWidth: 1,
-    gap: 0,
-    overflow: 'hidden',
-    padding: 16,
-    ...nativeUI.curveStyle,
-    ...nativeUI.cardShadow,
-  },
-  fieldDivider: {
-    backgroundColor: colors.border,
-    height: 1,
-    marginVertical: 14,
-  },
-
-  divider: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 12,
-  },
-  dividerLine: {
-    backgroundColor: colors.border,
-    flex: 1,
-    height: 1,
-  },
-  dividerText: {
-    color: colors.muted,
-    fontFamily: nativeUI.fontMedium,
-    fontSize: 13,
-    fontWeight: '600',
-  },
-
-  social: {
-    gap: 10,
-  },
-  appleBtn: {
-    height: nativeUI.controlHeight,
-    width: '100%',
-  },
-
-  footer: {
-    alignItems: 'center',
-    gap: 2,
-  },
-  footerText: {
-    ...fontBase,
-    color: colors.muted,
-    fontSize: 14,
-  },
-});

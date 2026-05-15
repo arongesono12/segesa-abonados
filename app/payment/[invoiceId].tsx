@@ -1,10 +1,9 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { Screen } from '@/components/screen';
-import { sharedStyles } from '@/components/shared-styles';
 import { electricityApi } from '@/services/electricity-api';
 import { colors } from '@/theme/colors';
 import { fontBase, nativeUI } from '@/theme/native-ui';
@@ -31,10 +30,10 @@ export default function PaymentMethodScreen() {
 
     try {
       const payment = await electricityApi.payInvoice(invoiceId, selectedMethod);
-      router.replace({
-        pathname: '/payment/confirmation',
-        params: { reference: payment.reference, amount: String(payment.amount), currency: payment.currency },
-      });
+      if (process.env.EXPO_OS === 'ios') {
+        const haptics = require('expo-haptics');
+        haptics.notificationAsync(haptics.NotificationFeedbackType.Success);
+      }
     } catch (caughtError) {
       setError(getErrorMessage(caughtError));
     } finally {
@@ -44,78 +43,65 @@ export default function PaymentMethodScreen() {
 
   return (
     <Screen>
-      <Text style={sharedStyles.title}>Método de pago</Text>
-      <Text style={sharedStyles.subtitle}>Elige cómo quieres pagar esta factura. La confirmación se consulta al backend.</Text>
+      <Text style={{ color: colors.text, fontSize: 30, fontWeight: '800', lineHeight: 36 }}>
+        Método de pago
+      </Text>
+      <Text style={{ color: colors.textSoft, fontSize: 16, lineHeight: 24 }}>
+        Elige cómo quieres pagar esta factura. La confirmación se consulta al backend.
+      </Text>
 
-      <View style={styles.list}>
+      <View style={{ gap: 12 }}>
         {methods.map((method) => {
           const selected = selectedMethod === method.id;
 
           return (
-            <Pressable key={method.id} onPress={() => setSelectedMethod(method.id)} style={[styles.method, selected && styles.selected]}>
-              <View style={styles.radioOuter}>{selected ? <View style={styles.radioInner} /> : null}</View>
-              <View style={styles.methodText}>
-                <Text style={styles.methodTitle}>{method.title}</Text>
-                <Text style={styles.methodDescription}>{method.description}</Text>
+            <Pressable
+              key={method.id}
+              onPress={() => setSelectedMethod(method.id)}
+              style={{
+                alignItems: 'center',
+                backgroundColor: colors.surface,
+                borderColor: selected ? colors.primary : colors.border,
+                borderRadius: 8,
+                borderCurve: 'continuous',
+                borderWidth: selected ? 2 : 1,
+                flexDirection: 'row',
+                gap: 12,
+                padding: 16,
+              }}>
+              <View style={{
+                alignItems: 'center',
+                borderColor: colors.primary,
+                borderRadius: 10,
+                borderWidth: 2,
+                height: 20,
+                justifyContent: 'center',
+                width: 20,
+              }}>
+                {selected ? (
+                  <View style={{
+                    backgroundColor: colors.primary,
+                    borderRadius: 5,
+                    height: 10,
+                    width: 10,
+                  }} />
+                ) : null}
+              </View>
+              <View style={{ flex: 1, gap: 4 }}>
+                <Text style={{ color: colors.text, fontSize: 16, fontWeight: '900' }}>
+                  {method.title}
+                </Text>
+                <Text style={{ color: colors.textSoft, fontSize: 13, lineHeight: 19 }}>
+                  {method.description}
+                </Text>
               </View>
             </Pressable>
           );
         })}
       </View>
 
-      {error ? <Text style={sharedStyles.errorText}>{error}</Text> : null}
-      <AppButton title="Confirmar pago" icon="shield-check" loading={isSubmitting} onPress={payInvoice} />
+      {error ? <Text style={{ color: colors.danger, fontSize: 13 }}>{error}</Text> : null}
+      <AppButton title="Confirmar pago" sfIcon="checkmark.shield.fill" loading={isSubmitting} onPress={payInvoice} />
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  list: {
-    gap: 12,
-  },
-  method: {
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-    borderRadius: nativeUI.radius,
-    borderWidth: 1,
-    flexDirection: 'row',
-    gap: 12,
-    padding: 16,
-  },
-  selected: {
-    borderColor: colors.primary,
-    borderWidth: 2,
-  },
-  radioOuter: {
-    alignItems: 'center',
-    borderColor: colors.primary,
-    borderRadius: 10,
-    borderWidth: 2,
-    height: 20,
-    justifyContent: 'center',
-    width: 20,
-  },
-  radioInner: {
-    backgroundColor: colors.primary,
-    borderRadius: 5,
-    height: 10,
-    width: 10,
-  },
-  methodText: {
-    flex: 1,
-    gap: 4,
-  },
-  methodTitle: {
-    ...fontBase,
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '900',
-  },
-  methodDescription: {
-    ...fontBase,
-    color: colors.textSoft,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-});

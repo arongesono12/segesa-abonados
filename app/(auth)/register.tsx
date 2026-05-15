@@ -1,16 +1,12 @@
-import { router } from 'expo-router';
+import { Link } from 'expo-router';
 import { useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { AppTextField } from '@/components/app-text-field';
 import { Screen } from '@/components/screen';
-import { ScreenHeader } from '@/components/screen-header';
-import { sharedStyles } from '@/components/shared-styles';
-import { TextLink } from '@/components/text-link';
 import { useAuth } from '@/features/auth/auth-context';
 import { colors } from '@/theme/colors';
-import { fontBase, nativeUI } from '@/theme/native-ui';
 import { getErrorMessage, validateEmail, validatePassword } from '@/utils/validation';
 
 export default function RegisterScreen() {
@@ -32,7 +28,10 @@ export default function RegisterScreen() {
     try {
       setIsSubmitting(true);
       await register(name, email, password);
-      router.replace('/');
+      if (process.env.EXPO_OS === 'ios') {
+        const haptics = require('expo-haptics');
+        haptics.notificationAsync(haptics.NotificationFeedbackType.Success);
+      }
     } catch (caughtError) {
       setError(getErrorMessage(caughtError));
     } finally {
@@ -42,88 +41,25 @@ export default function RegisterScreen() {
 
   return (
     <Screen>
-      <View style={styles.identity}>
-        <Image source={require('@/assets/images/icon.png')} style={styles.logo} />
-        <ScreenHeader title="Crear cuenta" subtitle="Después vincularemos tu cuenta eléctrica principal." />
+      <View style={{ gap: 10, marginTop: 24 }}>
+        <Text style={{ color: colors.text, fontSize: 30, fontWeight: '800', lineHeight: 36 }}>
+          Crear cuenta
+        </Text>
+        <Text style={{ color: colors.textSoft, fontSize: 16, lineHeight: 24 }}>
+          Después del registro vincularemos tu cuenta eléctrica principal.
+        </Text>
       </View>
 
-      <View style={styles.formCard}>
-        <AppTextField
-          autoComplete="name"
-          label="Nombre completo"
-          onChangeText={setName}
-          returnKeyType="next"
-          textContentType="name"
-          value={name}
-        />
-        <View style={styles.fieldDivider} />
-        <AppTextField
-          autoCapitalize="none"
-          autoComplete="email"
-          keyboardType="email-address"
-          label="Correo electrónico"
-          onChangeText={setEmail}
-          returnKeyType="next"
-          textContentType="emailAddress"
-          value={email}
-        />
-        <View style={styles.fieldDivider} />
-        <AppTextField
-          autoComplete="new-password"
-          helperText="Usa al menos 6 caracteres."
-          label="Contraseña"
-          onChangeText={setPassword}
-          returnKeyType="go"
-          secureTextEntry
-          textContentType="newPassword"
-          value={password}
-        />
-      </View>
-
-      {error ? <Text style={sharedStyles.errorText}>{error}</Text> : null}
-
-      <AppButton title="Crear mi cuenta" icon="person-add-outline" loading={isSubmitting} onPress={handleRegister} />
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>¿Ya tienes cuenta?</Text>
-        <TextLink title="Iniciar sesión" onPress={() => router.replace('/(auth)/login')} />
+      <View style={{ gap: 14 }}>
+        <AppTextField label="Nombre completo" onChangeText={setName} value={name} />
+        <AppTextField autoCapitalize="none" keyboardType="email-address" label="Correo electrónico" onChangeText={setEmail} value={email} />
+        <AppTextField label="Contraseña" onChangeText={setPassword} secureTextEntry value={password} />
+        {error ? <Text style={{ color: colors.danger, fontSize: 13 }}>{error}</Text> : null}
+        <AppButton title="Registrarme" loading={isSubmitting} onPress={handleRegister} />
+        <Link href="/(auth)/login" asChild>
+          <AppButton title="Ya tengo cuenta" variant="ghost" onPress={() => {}} />
+        </Link>
       </View>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  identity: {
-    gap: 16,
-    marginTop: 8,
-  },
-  logo: {
-    borderRadius: nativeUI.compactRadius,
-    height: 56,
-    width: 56,
-    ...nativeUI.curveStyle,
-  },
-  formCard: {
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-    borderRadius: nativeUI.radius,
-    borderWidth: 1,
-    overflow: 'hidden',
-    padding: 16,
-    ...nativeUI.curveStyle,
-    ...nativeUI.cardShadow,
-  },
-  fieldDivider: {
-    backgroundColor: colors.border,
-    height: 1,
-    marginVertical: 14,
-  },
-  footer: {
-    alignItems: 'center',
-    gap: 2,
-  },
-  footerText: {
-    ...fontBase,
-    color: colors.muted,
-    fontSize: 14,
-  },
-});
