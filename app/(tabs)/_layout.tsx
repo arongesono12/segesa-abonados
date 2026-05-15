@@ -1,33 +1,74 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { Redirect, Tabs } from 'expo-router';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { FullScreenLoader } from '@/components/full-screen-loader';
+import { useAuth } from '@/features/auth/auth-context';
+import { colors } from '@/theme/colors';
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function TabsLayout() {
+  const { isAuthenticated, isLoading, needsOnboarding } = useAuth();
+
+  if (isLoading) {
+    return <FullScreenLoader label="Cargando información..." />;
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/welcome" />;
+  }
+
+  if (needsOnboarding) {
+    return <Redirect href="/onboarding/provider" />;
+  }
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
+        headerStyle: { backgroundColor: colors.surface },
+        headerShadowVisible: false,
+        headerTintColor: colors.text,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.muted,
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+          height: 64,
+          paddingBottom: 8,
+          paddingTop: 8,
+        },
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: 'Inicio',
+          tabBarIcon: ({ color, size }) => <Ionicons name="grid-outline" color={color} size={size} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="invoices"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Facturas',
+          tabBarIcon: ({ color, size }) => <Ionicons name="receipt-outline" color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="history"
+        options={{
+          title: 'Historial',
+          tabBarIcon: ({ color, size }) => <Ionicons name="time-outline" color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="accounts"
+        options={{
+          title: 'Cuentas',
+          tabBarIcon: ({ color, size }) => <Ionicons name="flash-outline" color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Perfil',
+          tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" color={color} size={size} />,
         }}
       />
     </Tabs>

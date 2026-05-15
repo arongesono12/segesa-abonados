@@ -1,98 +1,129 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import { useCallback } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { AppButton } from '@/components/app-button';
+import { EmptyState } from '@/components/empty-state';
+import { InvoiceCard } from '@/components/invoice-card';
+import { Screen } from '@/components/screen';
+import { sharedStyles } from '@/components/shared-styles';
+import { useAuth } from '@/features/auth/auth-context';
+import { useApiResource } from '@/hooks/use-api-resource';
+import { electricityApi } from '@/services/electricity-api';
+import { colors } from '@/theme/colors';
+import { formatDate, formatMoney } from '@/utils/format';
 
-export default function HomeScreen() {
+export default function DashboardScreen() {
+  const { user, primaryAccount, updateAccounts } = useAuth();
+  const loadPendingInvoices = useCallback(() => electricityApi.getPendingInvoices(), []);
+  const { data: invoices, isLoading, error, refetch } = useApiResource(loadPendingInvoices);
+
+  const totalPending = invoices?.reduce((sum, invoice) => sum + invoice.amount, 0) ?? 0;
+
+  const syncCustomer = async () => {
+    const accounts = await electricityApi.syncCustomer();
+    await updateAccounts(accounts);
+    await refetch();
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <Screen>
+      <View style={styles.header}>
+        <Text style={styles.greeting}>Hola, {user?.name}</Text>
+        <Text style={sharedStyles.subtitle}>Este es el estado actualizado de tu servicio eléctrico.</Text>
+      </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      <View style={styles.balanceCard}>
+        <Text style={styles.cardLabel}>Pendiente por pagar</Text>
+        <Text style={styles.balance}>{formatMoney(totalPending)}</Text>
+        <Text style={styles.cardMeta}>{invoices?.length ?? 0} factura(s) pendiente(s)</Text>
+      </View>
+
+      {primaryAccount ? (
+        <View style={sharedStyles.card}>
+          <Text style={styles.sectionTitle}>{primaryAccount.providerName}</Text>
+          <Text style={styles.accountText}>Contrato {primaryAccount.contractNumber}</Text>
+          <Text style={styles.accountText}>{primaryAccount.serviceAddress}</Text>
+          <Text style={styles.accountSync}>Última sincronización: {formatDate(primaryAccount.lastSyncAt)}</Text>
+        </View>
+      ) : null}
+
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Facturas recientes</Text>
+        <Text style={styles.link} onPress={() => router.push('/(tabs)/invoices')}>Ver todo</Text>
+      </View>
+
+      {isLoading ? <ActivityIndicator color={colors.primary} /> : null}
+      {error ? <EmptyState icon="warning-outline" title="No pudimos cargar facturas" message={error} /> : null}
+      {!isLoading && !error && invoices?.length === 0 ? (
+        <EmptyState title="Sin pendientes" message="No tienes facturas pendientes en este momento." />
+      ) : null}
+      {invoices?.slice(0, 2).map((invoice) => (
+        <InvoiceCard key={invoice.id} invoice={invoice} onPress={() => router.push(`/invoice/${invoice.id}`)} />
+      ))}
+
+      <View style={styles.quickActions}>
+        <AppButton title="Sincronizar" icon="refresh-outline" variant="secondary" onPress={syncCustomer} />
+        <AppButton title="Métodos de pago" icon="card-outline" variant="secondary" onPress={() => router.push('/(tabs)/invoices')} />
+      </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  header: {
+    gap: 8,
+  },
+  greeting: {
+    color: colors.text,
+    fontSize: 26,
+    fontWeight: '900',
+  },
+  balanceCard: {
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    gap: 8,
+    padding: 18,
+  },
+  cardLabel: {
+    color: '#DDEFEA',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  balance: {
+    color: colors.surface,
+    fontSize: 34,
+    fontWeight: '900',
+  },
+  cardMeta: {
+    color: '#DDEFEA',
+    fontSize: 14,
+  },
+  sectionHeader: {
     alignItems: 'center',
-    gap: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  sectionTitle: {
+    color: colors.text,
+    fontSize: 18,
+    fontWeight: '900',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  link: {
+    color: colors.primary,
+    fontWeight: '800',
+  },
+  accountText: {
+    color: colors.textSoft,
+    fontSize: 14,
+    marginTop: 4,
+  },
+  accountSync: {
+    color: colors.muted,
+    fontSize: 12,
+    marginTop: 10,
+  },
+  quickActions: {
+    gap: 10,
   },
 });

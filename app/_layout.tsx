@@ -1,24 +1,35 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { AuthProvider } from '@/features/auth/auth-context';
+import { colors } from '@/theme/colors';
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  initialRouteName: 'index',
 };
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+    <AuthProvider>
+      <Stack
+        screenOptions={{
+          headerStyle: { backgroundColor: colors.surface },
+          headerShadowVisible: false,
+          headerTintColor: colors.text,
+          headerTitleStyle: { fontWeight: '700' },
+          contentStyle: { backgroundColor: colors.background },
+        }}>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="onboarding/provider" options={{ title: 'Proveedor eléctrico' }} />
+        <Stack.Screen name="onboarding/account" options={{ title: 'Cuenta de servicio' }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        <Stack.Screen name="invoice/[id]" options={{ title: 'Detalle de factura' }} />
+        <Stack.Screen name="payment/[invoiceId]" options={{ title: 'Método de pago' }} />
+        <Stack.Screen name="payment/confirmation" options={{ title: 'Confirmación' }} />
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+      <StatusBar style="dark" />
+    </AuthProvider>
   );
 }
