@@ -1,7 +1,7 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { AppTextField } from '@/components/app-text-field';
@@ -9,6 +9,7 @@ import { Screen } from '@/components/screen';
 import { sharedStyles } from '@/components/shared-styles';
 import { useAuth } from '@/features/auth/auth-context';
 import { colors } from '@/theme/colors';
+import { fontBase, nativeUI } from '@/theme/native-ui';
 import { getErrorMessage, validateEmail, validatePassword } from '@/utils/validation';
 
 export default function LoginScreen() {
@@ -77,6 +78,7 @@ export default function LoginScreen() {
   return (
     <Screen>
       <View style={styles.header}>
+        <Image source={require('@/assets/images/icon.png')} style={styles.logo} />
         <Text style={sharedStyles.title}>Bienvenido de nuevo</Text>
         <Text style={sharedStyles.subtitle}>Accede para consultar y pagar tus facturas de electricidad.</Text>
       </View>
@@ -96,7 +98,17 @@ export default function LoginScreen() {
 
       <View style={styles.social}>
         <AppButton title="Continuar con Google" icon="logo-google" variant="secondary" loading={loadingAction === 'google'} onPress={handleGoogleLogin} />
-        <AppButton title="Continuar con Apple" icon="logo-apple" variant="secondary" loading={loadingAction === 'apple'} onPress={handleAppleLogin} />
+        {Platform.OS === 'ios' ? (
+          <AppleAuthentication.AppleAuthenticationButton
+            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+            buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+            cornerRadius={nativeUI.radius}
+            onPress={handleAppleLogin}
+            style={styles.appleButton}
+          />
+        ) : (
+          <AppButton title="Continuar con Apple" icon="logo-apple" variant="secondary" loading={loadingAction === 'apple'} onPress={handleAppleLogin} />
+        )}
       </View>
 
       <View style={styles.footer}>
@@ -114,17 +126,26 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 24,
   },
+  logo: {
+    height: 64,
+    width: 64,
+  },
   form: {
     gap: 14,
   },
   social: {
     gap: 10,
   },
+  appleButton: {
+    height: nativeUI.controlHeight,
+    width: '100%',
+  },
   footer: {
     alignItems: 'center',
     gap: 6,
   },
   register: {
+    ...fontBase,
     color: colors.primary,
     fontSize: 15,
     fontWeight: '700',

@@ -7,6 +7,7 @@ import { Screen } from '@/components/screen';
 import { sharedStyles } from '@/components/shared-styles';
 import { electricityApi } from '@/services/electricity-api';
 import { colors } from '@/theme/colors';
+import { fontBase, nativeUI } from '@/theme/native-ui';
 import { PaymentMethodType } from '@/types/domain';
 import { getErrorMessage } from '@/utils/validation';
 
@@ -76,7 +77,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.surface,
     borderColor: colors.border,
-    borderRadius: 8,
+    borderRadius: nativeUI.radius,
     borderWidth: 1,
     flexDirection: 'row',
     gap: 12,
@@ -106,11 +107,13 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   methodTitle: {
+    ...fontBase,
     color: colors.text,
     fontSize: 16,
     fontWeight: '900',
   },
   methodDescription: {
+    ...fontBase,
     color: colors.textSoft,
     fontSize: 13,
     lineHeight: 19,

@@ -9,6 +9,7 @@ import { sharedStyles } from '@/components/shared-styles';
 import { useAuth } from '@/features/auth/auth-context';
 import { electricityApi } from '@/services/electricity-api';
 import { colors } from '@/theme/colors';
+import { fontBase, nativeUI } from '@/theme/native-ui';
 import { getErrorMessage } from '@/utils/validation';
 
 export default function AccountOnboardingScreen() {
@@ -72,17 +73,19 @@ const styles = StyleSheet.create({
   notice: {
     backgroundColor: colors.surfaceAlt,
     borderColor: colors.border,
-    borderRadius: 8,
+    borderRadius: nativeUI.radius,
     borderWidth: 1,
     gap: 4,
     padding: 16,
   },
   noticeTitle: {
+    ...fontBase,
     color: colors.primaryDark,
     fontSize: 15,
     fontWeight: '800',
   },
   noticeText: {
+    ...fontBase,
     color: colors.textSoft,
     fontSize: 14,
     lineHeight: 20,

@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@/theme/colors';
+import { fontBase, nativeUI } from '@/theme/native-ui';
 import { Invoice } from '@/types/domain';
 import { formatDate, formatMoney } from '@/utils/format';
 
@@ -33,10 +34,11 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
     borderColor: colors.border,
-    borderRadius: 8,
+    borderRadius: nativeUI.radius,
     borderWidth: 1,
     gap: 14,
     padding: 16,
+    ...nativeUI.cardShadow,
   },
   pressed: {
     opacity: 0.82,
@@ -48,21 +50,25 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   period: {
+    ...fontBase,
     color: colors.text,
     fontSize: 17,
     fontWeight: '800',
   },
   meta: {
+    ...fontBase,
     color: colors.muted,
     fontSize: 13,
   },
   amount: {
+    ...fontBase,
     color: colors.text,
     fontSize: 18,
     fontWeight: '800',
   },
   badge: {
-    borderRadius: 8,
+    ...fontBase,
+    borderRadius: nativeUI.radius,
     fontSize: 12,
     fontWeight: '800',
     overflow: 'hidden',
@@ -70,11 +76,11 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   paid: {
-    backgroundColor: '#E6F6EF',
+    backgroundColor: colors.successLight,
     color: colors.success,
   },
   pending: {
-    backgroundColor: '#FFF5D6',
+    backgroundColor: colors.warningLight,
     color: colors.warning,
   },
 });

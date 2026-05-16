@@ -7,6 +7,7 @@ import { Screen } from '@/components/screen';
 import { sharedStyles } from '@/components/shared-styles';
 import { useAuth } from '@/features/auth/auth-context';
 import { colors } from '@/theme/colors';
+import { fontBase, nativeUI } from '@/theme/native-ui';
 import { formatDate } from '@/utils/format';
 
 export default function AccountsScreen() {
@@ -46,13 +47,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   provider: {
+    ...fontBase,
     color: colors.text,
     fontSize: 18,
     fontWeight: '900',
   },
   badge: {
+    ...fontBase,
     backgroundColor: colors.surfaceAlt,
-    borderRadius: 8,
+    borderRadius: nativeUI.radius,
     color: colors.primary,
     fontSize: 12,
     fontWeight: '800',
@@ -61,17 +64,20 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   contract: {
+    ...fontBase,
     color: colors.textSoft,
     fontSize: 15,
     fontWeight: '700',
     marginTop: 10,
   },
   meta: {
+    ...fontBase,
     color: colors.muted,
     fontSize: 13,
     marginTop: 5,
   },
   sync: {
+    ...fontBase,
     color: colors.muted,
     fontSize: 12,
     marginTop: 12,

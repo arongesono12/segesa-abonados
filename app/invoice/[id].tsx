@@ -9,6 +9,7 @@ import { sharedStyles } from '@/components/shared-styles';
 import { useApiResource } from '@/hooks/use-api-resource';
 import { electricityApi } from '@/services/electricity-api';
 import { colors } from '@/theme/colors';
+import { fontBase, nativeUI } from '@/theme/native-ui';
 import { formatDate, formatMoney } from '@/utils/format';
 
 export default function InvoiceDetailsScreen() {
@@ -66,21 +67,24 @@ const styles = StyleSheet.create({
   },
   amountCard: {
     backgroundColor: colors.primary,
-    borderRadius: 8,
+    borderRadius: nativeUI.radius,
     gap: 8,
     padding: 18,
   },
   amountLabel: {
-    color: '#DDEFEA',
+    ...fontBase,
+    color: colors.primaryLight,
     fontSize: 14,
     fontWeight: '700',
   },
   amount: {
+    ...fontBase,
     color: colors.surface,
     fontSize: 36,
     fontWeight: '900',
   },
   status: {
+    ...fontBase,
     color: colors.surface,
     fontSize: 15,
     fontWeight: '800',
@@ -93,10 +97,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   rowLabel: {
+    ...fontBase,
     color: colors.muted,
     fontSize: 14,
   },
   rowValue: {
+    ...fontBase,
     color: colors.text,
     fontSize: 14,
     fontWeight: '800',

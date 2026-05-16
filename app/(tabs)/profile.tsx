@@ -6,6 +6,7 @@ import { Screen } from '@/components/screen';
 import { sharedStyles } from '@/components/shared-styles';
 import { useAuth } from '@/features/auth/auth-context';
 import { colors } from '@/theme/colors';
+import { fontBase } from '@/theme/native-ui';
 
 export default function ProfileScreen() {
   const { user, primaryAccount, logout } = useAuth();
@@ -36,17 +37,20 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   name: {
+    ...fontBase,
     color: colors.text,
     fontSize: 22,
     fontWeight: '900',
   },
   section: {
+    ...fontBase,
     color: colors.text,
     fontSize: 17,
     fontWeight: '900',
     marginBottom: 8,
   },
   meta: {
+    ...fontBase,
     color: colors.textSoft,
     fontSize: 15,
     marginTop: 6,

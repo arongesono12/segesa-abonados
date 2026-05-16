@@ -1,9 +1,12 @@
+import '../global.css';
+
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { AuthProvider } from '@/features/auth/auth-context';
 import { colors } from '@/theme/colors';
+import { platformStackHeaderOptions } from '@/theme/native-ui';
 
 export const unstable_settings = {
   initialRouteName: 'index',
@@ -14,6 +17,7 @@ export default function RootLayout() {
     <AuthProvider>
       <Stack
         screenOptions={{
+          ...platformStackHeaderOptions(),
           headerStyle: { backgroundColor: colors.surface },
           headerShadowVisible: false,
           headerTintColor: colors.text,

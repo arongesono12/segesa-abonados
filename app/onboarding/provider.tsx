@@ -9,6 +9,7 @@ import { sharedStyles } from '@/components/shared-styles';
 import { useApiResource } from '@/hooks/use-api-resource';
 import { electricityApi } from '@/services/electricity-api';
 import { colors } from '@/theme/colors';
+import { fontBase, nativeUI } from '@/theme/native-ui';
 import { ElectricityProvider } from '@/types/domain';
 
 export default function ProviderScreen() {
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.surface,
     borderColor: colors.border,
-    borderRadius: 8,
+    borderRadius: nativeUI.radius,
     borderWidth: 1,
     flexDirection: 'row',
     gap: 14,
@@ -87,12 +88,13 @@ const styles = StyleSheet.create({
   },
   logo: {
     alignItems: 'center',
-    borderRadius: 8,
+    borderRadius: nativeUI.radius,
     height: 46,
     justifyContent: 'center',
     width: 46,
   },
   logoText: {
+    ...fontBase,
     color: colors.surface,
     fontWeight: '900',
   },
@@ -101,11 +103,13 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   providerName: {
+    ...fontBase,
     color: colors.text,
     fontSize: 16,
     fontWeight: '800',
   },
   providerMeta: {
+    ...fontBase,
     color: colors.muted,
     fontSize: 13,
   },

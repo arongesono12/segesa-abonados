@@ -3,13 +3,15 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 're
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors } from '@/theme/colors';
+import { nativeUI, useNativeLayout } from '@/theme/native-ui';
 
 type ScreenProps = PropsWithChildren<{
   scroll?: boolean;
 }>;
 
 export function Screen({ children, scroll = true }: ScreenProps) {
-  const content = <View style={styles.content}>{children}</View>;
+  const { maxContentWidth, isWide } = useNativeLayout();
+  const content = <View style={[styles.content, { maxWidth: maxContentWidth }, isWide && styles.wideContent]}>{children}</View>;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
@@ -34,6 +36,10 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     gap: 18,
-    padding: 20,
+    padding: nativeUI.screenPadding,
+    width: '100%',
+  },
+  wideContent: {
+    alignSelf: 'center',
   },
 });

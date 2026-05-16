@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@/theme/colors';
+import { nativeUI } from '@/theme/native-ui';
 
 type EmptyStateProps = {
   icon?: keyof typeof Ionicons.glyphMap;
@@ -24,19 +25,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.surface,
     borderColor: colors.border,
-    borderRadius: 8,
+    borderRadius: nativeUI.radius,
     borderWidth: 1,
     gap: 8,
     padding: 24,
   },
   title: {
     color: colors.text,
+    fontFamily: nativeUI.fontFamily,
     fontSize: 18,
     fontWeight: '800',
     textAlign: 'center',
   },
   message: {
     color: colors.textSoft,
+    fontFamily: nativeUI.fontFamily,
     fontSize: 14,
     lineHeight: 20,
     textAlign: 'center',

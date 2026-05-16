@@ -1,6 +1,7 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@/theme/colors';
+import { nativeUI } from '@/theme/native-ui';
 
 type FullScreenLoaderProps = {
   label?: string;
@@ -26,6 +27,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: colors.textSoft,
+    fontFamily: nativeUI.fontFamily,
     fontSize: 15,
   },
 });

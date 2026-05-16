@@ -8,6 +8,7 @@ import { Screen } from '@/components/screen';
 import { sharedStyles } from '@/components/shared-styles';
 import { useAuth } from '@/features/auth/auth-context';
 import { colors } from '@/theme/colors';
+import { fontBase } from '@/theme/native-ui';
 import { getErrorMessage, validateEmail } from '@/utils/validation';
 
 export default function ForgotPasswordScreen() {
@@ -59,6 +60,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   success: {
+    ...fontBase,
     color: colors.success,
     fontSize: 14,
     fontWeight: '700',

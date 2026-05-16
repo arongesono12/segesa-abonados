@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { AppTextField } from '@/components/app-text-field';
@@ -39,6 +39,7 @@ export default function RegisterScreen() {
   return (
     <Screen>
       <View style={styles.header}>
+        <Image source={require('@/assets/images/icon.png')} style={styles.logo} />
         <Text style={sharedStyles.title}>Crear cuenta</Text>
         <Text style={sharedStyles.subtitle}>Después del registro vincularemos tu cuenta eléctrica principal.</Text>
       </View>
@@ -59,6 +60,10 @@ const styles = StyleSheet.create({
   header: {
     gap: 10,
     marginTop: 24,
+  },
+  logo: {
+    height: 64,
+    width: 64,
   },
   form: {
     gap: 14,

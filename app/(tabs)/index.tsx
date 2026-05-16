@@ -11,6 +11,7 @@ import { useAuth } from '@/features/auth/auth-context';
 import { useApiResource } from '@/hooks/use-api-resource';
 import { electricityApi } from '@/services/electricity-api';
 import { colors } from '@/theme/colors';
+import { fontBase, nativeUI } from '@/theme/native-ui';
 import { formatDate, formatMoney } from '@/utils/format';
 
 export default function DashboardScreen() {
@@ -75,28 +76,32 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   greeting: {
+    ...fontBase,
     color: colors.text,
     fontSize: 26,
     fontWeight: '900',
   },
   balanceCard: {
     backgroundColor: colors.primary,
-    borderRadius: 8,
+    borderRadius: nativeUI.radius,
     gap: 8,
     padding: 18,
   },
   cardLabel: {
-    color: '#DDEFEA',
+    ...fontBase,
+    color: colors.primaryLight,
     fontSize: 14,
     fontWeight: '700',
   },
   balance: {
+    ...fontBase,
     color: colors.surface,
     fontSize: 34,
     fontWeight: '900',
   },
   cardMeta: {
-    color: '#DDEFEA',
+    ...fontBase,
+    color: colors.primaryLight,
     fontSize: 14,
   },
   sectionHeader: {
@@ -105,20 +110,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   sectionTitle: {
+    ...fontBase,
     color: colors.text,
     fontSize: 18,
     fontWeight: '900',
   },
   link: {
+    ...fontBase,
     color: colors.primary,
     fontWeight: '800',
   },
   accountText: {
+    ...fontBase,
     color: colors.textSoft,
     fontSize: 14,
     marginTop: 4,
   },
   accountSync: {
+    ...fontBase,
     color: colors.muted,
     fontSize: 12,
     marginTop: 10,

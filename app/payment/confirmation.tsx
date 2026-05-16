@@ -5,6 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { AppButton } from '@/components/app-button';
 import { Screen } from '@/components/screen';
 import { colors } from '@/theme/colors';
+import { fontBase, nativeUI } from '@/theme/native-ui';
 import { formatMoney } from '@/utils/format';
 
 export default function PaymentConfirmationScreen() {
@@ -50,12 +51,14 @@ const styles = StyleSheet.create({
     width: 80,
   },
   title: {
+    ...fontBase,
     color: colors.text,
     fontSize: 28,
     fontWeight: '900',
     textAlign: 'center',
   },
   message: {
+    ...fontBase,
     color: colors.textSoft,
     fontSize: 16,
     lineHeight: 24,
@@ -64,7 +67,7 @@ const styles = StyleSheet.create({
   summary: {
     backgroundColor: colors.surface,
     borderColor: colors.border,
-    borderRadius: 8,
+    borderRadius: nativeUI.radius,
     borderWidth: 1,
     gap: 8,
     marginTop: 8,
@@ -72,11 +75,13 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   label: {
+    ...fontBase,
     color: colors.muted,
     fontSize: 13,
     fontWeight: '700',
   },
   value: {
+    ...fontBase,
     color: colors.text,
     fontSize: 18,
     fontWeight: '900',

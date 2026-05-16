@@ -7,6 +7,7 @@ import { sharedStyles } from '@/components/shared-styles';
 import { useApiResource } from '@/hooks/use-api-resource';
 import { electricityApi } from '@/services/electricity-api';
 import { colors } from '@/theme/colors';
+import { fontBase } from '@/theme/native-ui';
 import { formatDate, formatMoney } from '@/utils/format';
 
 export default function PaymentHistoryScreen() {
@@ -43,16 +44,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   amount: {
+    ...fontBase,
     color: colors.text,
     fontSize: 19,
     fontWeight: '900',
   },
   status: {
+    ...fontBase,
     color: colors.success,
     fontSize: 13,
     fontWeight: '800',
   },
   meta: {
+    ...fontBase,
     color: colors.muted,
     fontSize: 13,
     marginTop: 6,
