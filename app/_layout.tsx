@@ -11,7 +11,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { AuthProvider } from '@/features/auth/auth-context';
@@ -64,12 +64,12 @@ export default function RootLayout() {
         }}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding/provider" options={{ title: 'Proveedor eléctrico' }} />
         <Stack.Screen name="onboarding/account" options={{ title: 'Cuenta de servicio' }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="invoice/[id]" options={{ title: 'Detalle de factura' }} />
-        <Stack.Screen name="payment/[invoiceId]" options={{ title: 'Método de pago' }} />
-        <Stack.Screen name="payment/confirmation" options={{ title: 'Confirmación' }} />
+        <Stack.Screen name="invoice/[id]" options={{ title: 'Detalle de factura', presentation: 'card' }} />
+        <Stack.Screen name="payment/[invoiceId]" options={{ title: 'Método de pago', presentation: 'card' }} />
+        <Stack.Screen name="payment/confirmation" options={{ title: 'Confirmación', presentation: 'card' }} />
       </Stack>
       <StatusBar backgroundColor={colors.background} style="dark" translucent />
     </AuthProvider>

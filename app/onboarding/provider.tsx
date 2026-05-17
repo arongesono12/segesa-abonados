@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
@@ -20,9 +21,12 @@ export default function ProviderScreen() {
   const { data, isLoading, error, refetch } = useApiResource(loadProviders);
 
   const continueToAccount = () => {
-    if (selectedProvider && process.env.EXPO_OS === 'ios') {
-      const haptics = require('expo-haptics');
-      haptics.impactAsync(haptics.ImpactFeedbackStyle.Medium);
+    if (selectedProvider) {
+      if (process.env.EXPO_OS === 'ios') {
+        const haptics = require('expo-haptics');
+        haptics.impactAsync(haptics.ImpactFeedbackStyle.Medium);
+      }
+      router.push(`/onboarding/account?providerId=${selectedProvider.id}`);
     }
   };
 
@@ -84,8 +88,17 @@ export default function ProviderScreen() {
                   {provider.country} · {provider.supportPhone}
                 </Text>
               </View>
-              <View style={[styles.selectionMark, selected && styles.selectionMarkSelected]}>
-                {selected ? <Text style={styles.selectionText}>✓</Text> : null}
+              <View style={[{
+                alignItems: 'center',
+                backgroundColor: colors.border,
+                borderRadius: 12,
+                height: 24,
+                justifyContent: 'center',
+                width: 24,
+              }, selected && {
+                backgroundColor: colors.primary,
+              }]}>
+                {selected ? <Text style={{ color: colors.surface, fontSize: 14, fontWeight: '700' }}>✓</Text> : null}
               </View>
             </Pressable>
           );

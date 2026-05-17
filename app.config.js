@@ -10,6 +10,7 @@ const config = {
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
+    bundleIdentifier: 'com.vicentehmba.Segesa-Abonados',
   },
   android: {
     adaptiveIcon: {

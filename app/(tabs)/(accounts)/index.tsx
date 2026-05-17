@@ -1,4 +1,5 @@
 import { Link } from 'expo-router';
+import { useState } from 'react';
 import { Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 

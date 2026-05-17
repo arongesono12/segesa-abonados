@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
@@ -34,6 +34,7 @@ export default function AccountOnboardingScreen() {
         const haptics = require('expo-haptics');
         haptics.notificationAsync(haptics.NotificationFeedbackType.Success);
       }
+      router.replace('/(tabs)');
     } catch (caughtError) {
       setError(getErrorMessage(caughtError));
     } finally {

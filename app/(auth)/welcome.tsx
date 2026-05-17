@@ -4,6 +4,7 @@ import { Image, Pressable, Text, View } from "react-native";
 import { AppButton } from "@/components/app-button";
 import { Screen } from "@/components/screen";
 import { colors } from "@/theme/colors";
+import { useNativeLayout } from "@/theme/native-ui";
 
 export default function WelcomeScreen() {
   const { isTablet } = useNativeLayout();

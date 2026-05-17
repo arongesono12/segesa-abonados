@@ -1,5 +1,5 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
@@ -31,6 +31,7 @@ export default function LoginScreen() {
         const haptics = require('expo-haptics');
         haptics.notificationAsync(haptics.NotificationFeedbackType.Success);
       }
+      router.replace('/onboarding/provider');
     } catch (caughtError) {
       setError(getErrorMessage(caughtError));
     } finally {
@@ -47,6 +48,7 @@ export default function LoginScreen() {
         const haptics = require('expo-haptics');
         haptics.notificationAsync(haptics.NotificationFeedbackType.Success);
       }
+      router.replace('/onboarding/provider');
     } catch (caughtError) {
       setError(getErrorMessage(caughtError));
     } finally {
@@ -71,6 +73,7 @@ export default function LoginScreen() {
         const haptics = require('expo-haptics');
         haptics.notificationAsync(haptics.NotificationFeedbackType.Success);
       }
+      router.replace('/onboarding/provider');
     } catch (caughtError) {
       setError(getErrorMessage(caughtError));
     } finally {

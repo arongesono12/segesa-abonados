@@ -1,18 +1,12 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { Text, View } from 'react-native';
 
+import { AppButton } from '@/components/app-button';
 import { ActionRow } from '@/components/action-row';
 import { Screen } from '@/components/screen';
 import { useAuth } from '@/features/auth/auth-context';
 import { colors } from '@/theme/colors';
 import { fontBase, nativeUI } from '@/theme/native-ui';
-import { AuthProvider } from '@/types/domain';
-
-const providerMeta: Record<AuthProvider, { label: string; icon: keyof typeof MaterialCommunityIcons.glyphMap }> = {
-  email: { label: 'Correo electrónico', icon: 'email-outline' },
-  google: { label: 'Google', icon: 'google' },
-  apple: { label: 'Apple', icon: 'apple' },
-};
 
 export default function ProfileScreen() {
   const { user, primaryAccount, accounts, logout } = useAuth();
@@ -23,6 +17,7 @@ export default function ProfileScreen() {
       const haptics = require('expo-haptics');
       haptics.notificationAsync(haptics.NotificationFeedbackType.Warning);
     }
+    router.replace('/(auth)/welcome');
   };
 
   const initials = user?.name
@@ -31,7 +26,6 @@ export default function ProfileScreen() {
     .slice(0, 2)
     .join('')
     .toUpperCase() ?? '?';
-  const provider = user ? providerMeta[user.authProvider] : null;
 
   return (
     <Screen>
