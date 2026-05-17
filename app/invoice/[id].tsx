@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
@@ -6,22 +7,33 @@ import { AppButton } from '@/components/app-button';
 import { EmptyState } from '@/components/empty-state';
 import { Screen } from '@/components/screen';
 import { sharedStyles } from '@/components/shared-styles';
+import { TextLink } from '@/components/text-link';
 import { useApiResource } from '@/hooks/use-api-resource';
 import { electricityApi } from '@/services/electricity-api';
 import { colors } from '@/theme/colors';
 import { fontBase, nativeUI } from '@/theme/native-ui';
+import { InvoiceStatus } from '@/types/domain';
 import { formatDate, formatMoney } from '@/utils/format';
+
+const statusConfig: Record<InvoiceStatus, { label: string; color: string; bg: string; icon: keyof typeof MaterialCommunityIcons.glyphMap }> = {
+  pending: { label: 'Pendiente', color: colors.warning, bg: colors.warningLight, icon: 'clock-outline' },
+  processing: { label: 'Procesando', color: colors.accent, bg: '#DBEAFE', icon: 'sync' },
+  paid: { label: 'Pagada', color: colors.success, bg: colors.successLight, icon: 'check-circle-outline' },
+  expired: { label: 'Vencida', color: colors.danger, bg: '#FEE2E2', icon: 'alert-circle-outline' },
+};
 
 export default function InvoiceDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const loadInvoice = useCallback(() => electricityApi.getInvoice(id), [id]);
   const { data: invoice, isLoading, error } = useApiResource(loadInvoice, Boolean(id));
 
+  const status = invoice ? statusConfig[invoice.status] : null;
+
   return (
     <Screen>
       {isLoading ? <ActivityIndicator color={colors.primary} /> : null}
-      {error ? <EmptyState icon="warning-outline" title="Factura no disponible" message={error} /> : null}
-      {invoice ? (
+      {error ? <EmptyState icon="alert-outline" title="Factura no disponible" message={error} /> : null}
+      {invoice && status ? (
         <>
           <View style={styles.header}>
             <Text style={sharedStyles.title}>{invoice.period}</Text>
@@ -29,23 +41,38 @@ export default function InvoiceDetailsScreen() {
           </View>
 
           <View style={styles.amountCard}>
-            <Text style={styles.amountLabel}>Total</Text>
+            <Text style={styles.amountLabel}>Total a pagar</Text>
             <Text style={styles.amount}>{formatMoney(invoice.amount, invoice.currency)}</Text>
-            <Text style={styles.status}>{invoice.status === 'paid' ? 'Pagada' : 'Pendiente de pago'}</Text>
+            <View style={styles.statusBadge}>
+              <MaterialCommunityIcons name={status.icon} size={14} color={status.color} />
+              <Text style={[styles.statusText, { color: status.color }]}>{status.label}</Text>
+            </View>
           </View>
 
           <View style={sharedStyles.card}>
+            <Row label="Número" value={invoice.invoiceNumber} />
+            <Row label="Periodo" value={invoice.period} />
             <Row label="Fecha de emisión" value={formatDate(invoice.issueDate)} />
             <Row label="Fecha límite" value={formatDate(invoice.dueDate)} />
             <Row label="Consumo" value={`${invoice.kwh} kWh`} />
-            <Row label="Estado" value={invoice.status} />
           </View>
 
-          {invoice.status !== 'paid' ? (
-            <AppButton title="Pagar factura" icon="card-outline" onPress={() => router.push(`/payment/${invoice.id}`)} />
-          ) : (
-            <AppButton title="Ver historial" icon="time-outline" variant="secondary" onPress={() => router.push('/(tabs)/history')} />
-          )}
+          {invoice.status === 'pending' || invoice.status === 'expired' ? (
+            <AppButton
+              title="Pagar factura"
+              icon="credit-card-outline"
+              onPress={() => router.push(`/payment/${invoice.id}`)}
+            />
+          ) : invoice.status === 'paid' ? (
+            <AppButton
+              title="Ver historial de pagos"
+              icon="clock-outline"
+              variant="secondary"
+              onPress={() => router.push('/(tabs)/history')}
+            />
+          ) : null}
+
+          <TextLink title="Volver a facturas" onPress={() => router.back()} />
         </>
       ) : null}
     </Screen>
@@ -63,18 +90,18 @@ function Row({ label, value }: { label: string; value: string }) {
 
 const styles = StyleSheet.create({
   header: {
-    gap: 8,
+    gap: 6,
   },
   amountCard: {
     backgroundColor: colors.primary,
     borderRadius: nativeUI.radius,
-    gap: 8,
-    padding: 18,
+    gap: 10,
+    padding: 20,
   },
   amountLabel: {
     ...fontBase,
     color: colors.primaryLight,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
   },
   amount: {
@@ -82,11 +109,21 @@ const styles = StyleSheet.create({
     color: colors.surface,
     fontSize: 36,
     fontWeight: '900',
+    fontVariant: ['tabular-nums'],
   },
-  status: {
+  statusBadge: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: 20,
+    flexDirection: 'row',
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  statusText: {
     ...fontBase,
-    color: colors.surface,
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '800',
   },
   row: {

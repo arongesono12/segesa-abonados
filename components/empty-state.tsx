@@ -1,19 +1,19 @@
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@/theme/colors';
 import { nativeUI } from '@/theme/native-ui';
 
 type EmptyStateProps = {
-  icon?: keyof typeof Ionicons.glyphMap;
+  icon?: string;
   title: string;
   message: string;
 };
 
-export function EmptyState({ icon = 'checkmark-circle-outline', title, message }: EmptyStateProps) {
+export function EmptyState({ icon = 'check-circle-outline', title, message }: EmptyStateProps) {
   return (
     <View style={styles.container}>
-      <Ionicons name={icon} color={colors.primary} size={36} />
+      <MaterialCommunityIcons name={icon as keyof typeof MaterialCommunityIcons.glyphMap} color={colors.primary} size={36} />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.message}>{message}</Text>
     </View>
@@ -29,10 +29,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: 8,
     padding: 24,
+    ...nativeUI.curveStyle,
   },
   title: {
     color: colors.text,
-    fontFamily: nativeUI.fontFamily,
+    fontFamily: nativeUI.fontBold,
     fontSize: 18,
     fontWeight: '800',
     textAlign: 'center',

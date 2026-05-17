@@ -1,5 +1,5 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
@@ -15,7 +15,7 @@ export default function PaymentConfirmationScreen() {
     <Screen>
       <View style={styles.container}>
         <View style={styles.check}>
-          <Ionicons name="checkmark" color={colors.surface} size={44} />
+          <MaterialCommunityIcons name="check" color={colors.surface} size={44} />
         </View>
         <Text style={styles.title}>Pago confirmado</Text>
         <Text style={styles.message}>
@@ -29,8 +29,8 @@ export default function PaymentConfirmationScreen() {
         </View>
       </View>
 
-      <AppButton title="Volver al dashboard" icon="grid-outline" onPress={() => router.replace('/(tabs)')} />
-      <AppButton title="Ver historial" icon="time-outline" variant="secondary" onPress={() => router.replace('/(tabs)/history')} />
+      <AppButton title="Volver al dashboard" icon="view-dashboard-outline" onPress={() => router.replace('/(tabs)')} />
+      <AppButton title="Ver historial" icon="clock-outline" variant="secondary" onPress={() => router.replace('/(tabs)/history')} />
     </Screen>
   );
 }

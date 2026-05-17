@@ -64,7 +64,7 @@ export default function PaymentMethodScreen() {
       </View>
 
       {error ? <Text style={sharedStyles.errorText}>{error}</Text> : null}
-      <AppButton title="Confirmar pago" icon="shield-checkmark-outline" loading={isSubmitting} onPress={payInvoice} />
+      <AppButton title="Confirmar pago" icon="shield-check" loading={isSubmitting} onPress={payInvoice} />
     </Screen>
   );
 }

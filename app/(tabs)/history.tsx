@@ -19,7 +19,7 @@ export default function PaymentHistoryScreen() {
       <Text style={sharedStyles.title}>Historial de pagos</Text>
       <Text style={sharedStyles.subtitle}>Pagos confirmados y referencias de operación.</Text>
       {isLoading ? <ActivityIndicator color={colors.primary} /> : null}
-      {error ? <EmptyState icon="warning-outline" title="No se pudo cargar el historial" message={error} /> : null}
+      {error ? <EmptyState icon="alert-outline" title="No se pudo cargar el historial" message={error} /> : null}
       {!isLoading && !error && payments?.length === 0 ? (
         <EmptyState title="Sin pagos todavía" message="Tus pagos confirmados aparecerán aquí." />
       ) : null}

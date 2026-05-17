@@ -56,4 +56,9 @@ export const electricityApi = {
     if (USE_MOCK_API) return mockApi.syncCustomer();
     return apiRequest('/customer/sync', { method: 'POST' });
   },
+
+  setPrimaryAccount(accountId: string): Promise<ElectricAccount[]> {
+    if (USE_MOCK_API) return mockApi.setPrimaryAccount(accountId);
+    return apiRequest(`/accounts/${accountId}/primary`, { method: 'POST' });
+  },
 };

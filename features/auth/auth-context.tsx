@@ -1,6 +1,7 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
 
 import { authService } from '@/features/auth/auth-service';
+import { electricityApi } from '@/services/electricity-api';
 import { deleteSecureItem, getSecureItem, saveSecureItem } from '@/services/storage';
 import { ElectricAccount, User } from '@/types/domain';
 
@@ -21,6 +22,7 @@ type AuthContextValue = {
   socialLogin: (provider: 'google' | 'apple', email: string, name: string) => Promise<void>;
   recoverPassword: (email: string) => Promise<void>;
   savePrimaryAccount: (account: ElectricAccount) => Promise<void>;
+  setPrimaryAccount: (accountId: string) => Promise<void>;
   updateAccounts: (accounts: ElectricAccount[]) => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -101,6 +103,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
           ...item,
           isPrimary: index === 0,
         }));
+        await updateAccounts(nextAccounts);
+      },
+      setPrimaryAccount: async (accountId) => {
+        const nextAccounts = await electricityApi.setPrimaryAccount(accountId);
         await updateAccounts(nextAccounts);
       },
       updateAccounts,

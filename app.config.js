@@ -18,7 +18,10 @@ const config = {
       monochromeImage: './assets/images/android-icon-monochrome.png',
     },
     edgeToEdgeEnabled: true,
-    predictiveBackGestureEnabled: false,
+    predictiveBackGestureEnabled: true,
+  },
+  androidNavigationBar: {
+    enforceContrast: false,
   },
   web: {
     output: 'static',

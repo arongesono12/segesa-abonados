@@ -1,19 +1,19 @@
 export const colors = {
-  background: '#F8FAFF',
+  background: '#F5F7FA',
   surface: '#FFFFFF',
   surfaceAlt: '#EFF6FF',
-  primary: '#2563EB',
-  primaryDark: '#1D4ED8',
-  primaryLight: '#BFDBFE',   // text on primary-colored backgrounds
-  secondary: '#F59E0B',
-  accent: '#7C3AED',
-  text: '#0F172A',
-  textSoft: '#475569',
-  muted: '#94A3B8',
-  border: '#E2E8F0',
-  danger: '#DC2626',
-  success: '#16A34A',
-  successLight: '#DCFCE7',   // badge background for paid/success state
-  warning: '#D97706',
-  warningLight: '#FEF9C3',   // badge background for pending/warning state
+  primary: '#1D4ED8',
+  primaryDark: '#1E3A8A',
+  primaryLight: '#DBEAFE',
+  secondary: '#E8B923',
+  accent: '#0EA5E9',
+  text: '#17201D',
+  textSoft: '#3E4A46',
+  muted: '#74817D',
+  border: '#D8E2F1',
+  danger: '#C0392B',
+  success: '#12805C',
+  successLight: '#D1F5EB',   // badge background for paid/success state
+  warning: '#B7791F',
+  warningLight: '#FEF3C7',   // badge background for pending/warning state
 };

@@ -1,73 +1,57 @@
 import { Platform, useWindowDimensions } from 'react-native';
 
-/**
- * Spread `fontBase` into every StyleSheet text entry so that fontFamily
- * is never accidentally omitted. In React Native, fontFamily does NOT
- * cascade from parent views — it must be declared on each Text style.
- *
- * Usage:
- *   myText: { ...fontBase, color: colors.text, fontSize: 16 }
- */
 export const fontBase = {
   fontFamily: Platform.select({
-    ios: undefined,
-    android: 'sans-serif',
-    web: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    default: undefined,
+    ios: 'Roboto_400Regular',
+    android: 'Roboto_400Regular',
+    web: 'Roboto_400Regular',
+    default: 'Roboto_400Regular',
   }),
 } as const;
 
+export const iosContinuousCurve = Platform.OS === 'ios' ? ({ borderCurve: 'continuous' } as const) : {};
+
 export const nativeUI = {
   platform: Platform.OS,
-
-  // iOS uses larger radius (iOS 26 "liquid glass" era), Android follows Material 3 medium shape
-  radius: Platform.select({ ios: 13, android: 12, web: 10, default: 12 }),
-
+  radius: Platform.select({ ios: 22, android: 20, web: 18, default: 20 }),
+  compactRadius: Platform.select({ ios: 16, android: 14, web: 14, default: 14 }),
   controlHeight: Platform.select({ ios: 54, android: 52, web: 48, default: 52 }),
   inputHeight: Platform.select({ ios: 56, android: 52, web: 48, default: 52 }),
   screenPadding: Platform.select({ ios: 20, android: 18, web: 24, default: 20 }),
-
-  // undefined = system font (SF Pro on iOS, Roboto on Android)
+  sectionGap: 18,
   fontFamily: Platform.select({
-    ios: undefined,
-    android: 'sans-serif',
-    web: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    default: undefined,
+    ios: 'Roboto_400Regular',
+    android: 'Roboto_400Regular',
+    web: 'Roboto_400Regular',
+    default: 'Roboto_400Regular',
   }),
-
-  // iOS: soft diffuse shadow; Android: Material elevation; Web: box-shadow
+  fontRegular: 'Roboto_400Regular',
+  fontMedium: 'Roboto_500Medium',
+  fontBold: 'Roboto_700Bold',
+  fontBlack: 'Roboto_900Black',
   cardShadow: Platform.select({
     ios: {
-      shadowColor: '#1E3A8A',
-      shadowOffset: { width: 0, height: 2 },
+      shadowColor: '#17201D',
+      shadowOffset: { width: 0, height: 6 },
       shadowOpacity: 0.07,
-      shadowRadius: 10,
+      shadowRadius: 18,
     },
-    android: {
-      elevation: 2,
-    },
-    web: {
-      boxShadow: '0 2px 12px rgba(30, 58, 138, 0.08)',
-    },
+    android: { elevation: 1 },
+    web: { boxShadow: '0 8px 24px rgba(15, 23, 42, 0.08)' },
     default: {},
   }),
-
-  // Primary button shadow with blue tint
   buttonShadow: Platform.select({
     ios: {
       shadowColor: '#1D4ED8',
-      shadowOffset: { width: 0, height: 4 },
+      shadowOffset: { width: 0, height: 8 },
       shadowOpacity: 0.22,
-      shadowRadius: 8,
+      shadowRadius: 16,
     },
-    android: {
-      elevation: 4,
-    },
-    web: {
-      boxShadow: '0 4px 14px rgba(29, 78, 216, 0.28)',
-    },
+    android: { elevation: 2 },
+    web: { boxShadow: '0 10px 22px rgba(29, 78, 216, 0.22)' },
     default: {},
   }),
+  curveStyle: iosContinuousCurve,
 };
 
 export function useNativeLayout() {
@@ -81,7 +65,12 @@ export function useNativeLayout() {
     isTablet,
     isWide,
     maxContentWidth: isWide ? 760 : isTablet ? 680 : undefined,
-    tabBarHeight: Platform.select({ ios: isTablet ? 74 : 84, android: 68, web: 64, default: 72 }),
+    tabBarHeight: Platform.select({
+      ios: isTablet ? 76 : 84,
+      android: 68,
+      web: 64,
+      default: 72,
+    }),
   };
 }
 
@@ -90,14 +79,13 @@ export function platformStackHeaderOptions() {
     ios: {
       headerBackTitle: 'Atrás',
       headerLargeTitleShadowVisible: false,
+      headerTransparent: false,
     },
     android: {
       animation: 'slide_from_right' as const,
       headerBackTitleVisible: false,
     },
-    web: {
-      headerBackTitleVisible: false,
-    },
+    web: { headerBackTitleVisible: false },
     default: {},
   });
 }
@@ -105,15 +93,12 @@ export function platformStackHeaderOptions() {
 export function platformTabHeaderOptions() {
   return Platform.select({
     ios: {
-      headerBackTitle: 'Atrás',
+      headerLargeTitle: false,
       headerLargeTitleShadowVisible: false,
+      headerBackTitle: 'Atrás',
     },
-    android: {
-      headerBackTitleVisible: false,
-    },
-    web: {
-      headerBackTitleVisible: false,
-    },
+    android: { headerBackTitleVisible: false },
+    web: { headerBackTitleVisible: false },
     default: {},
   });
 }

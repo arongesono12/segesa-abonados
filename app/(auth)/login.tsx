@@ -6,7 +6,9 @@ import { Image, Platform, StyleSheet, Text, View } from 'react-native';
 import { AppButton } from '@/components/app-button';
 import { AppTextField } from '@/components/app-text-field';
 import { Screen } from '@/components/screen';
+import { ScreenHeader } from '@/components/screen-header';
 import { sharedStyles } from '@/components/shared-styles';
+import { TextLink } from '@/components/text-link';
 import { useAuth } from '@/features/auth/auth-context';
 import { colors } from '@/theme/colors';
 import { fontBase, nativeUI } from '@/theme/native-ui';
@@ -21,12 +23,10 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     setError('');
-
     if (!validateEmail(email) || !validatePassword(password)) {
       setError('Introduce un correo válido y una contraseña de al menos 6 caracteres.');
       return;
     }
-
     try {
       setLoadingAction('email');
       await login(email, password);
@@ -41,7 +41,6 @@ export default function LoginScreen() {
   const handleGoogleLogin = async () => {
     setError('');
     setLoadingAction('google');
-
     try {
       await socialLogin('google', 'google.user@demo.com', 'Usuario Google');
       router.replace('/');
@@ -55,7 +54,6 @@ export default function LoginScreen() {
   const handleAppleLogin = async () => {
     setError('');
     setLoadingAction('apple');
-
     try {
       if (Platform.OS === 'ios') {
         await AppleAuthentication.signInAsync({
@@ -65,7 +63,6 @@ export default function LoginScreen() {
           ],
         });
       }
-
       await socialLogin('apple', 'apple.user@demo.com', 'Usuario Apple');
       router.replace('/');
     } catch (caughtError) {
@@ -77,77 +74,150 @@ export default function LoginScreen() {
 
   return (
     <Screen>
-      <View style={styles.header}>
+      <View style={styles.identity}>
         <Image source={require('@/assets/images/icon.png')} style={styles.logo} />
-        <Text style={sharedStyles.title}>Bienvenido de nuevo</Text>
-        <Text style={sharedStyles.subtitle}>Accede para consultar y pagar tus facturas de electricidad.</Text>
+        <ScreenHeader title="Bienvenido de nuevo" subtitle="Accede para consultar y pagar tus facturas." />
       </View>
 
-      <View style={styles.form}>
+      <View style={styles.formCard}>
         <AppTextField
           autoCapitalize="none"
+          autoComplete="email"
           keyboardType="email-address"
           label="Correo electrónico"
           onChangeText={setEmail}
+          returnKeyType="next"
+          textContentType="emailAddress"
           value={email}
         />
-        <AppTextField label="Contraseña" onChangeText={setPassword} secureTextEntry value={password} />
-        {error ? <Text style={sharedStyles.errorText}>{error}</Text> : null}
-        <AppButton title="Entrar" loading={loadingAction === 'email'} onPress={handleLogin} />
+        <View style={styles.fieldDivider} />
+        <AppTextField
+          autoComplete="current-password"
+          label="Contraseña"
+          onChangeText={setPassword}
+          returnKeyType="go"
+          secureTextEntry
+          textContentType="password"
+          value={password}
+        />
+      </View>
+
+      {error ? <Text style={sharedStyles.errorText}>{error}</Text> : null}
+
+      <AppButton
+        title="Entrar"
+        icon="login"
+        loading={loadingAction === 'email'}
+        onPress={handleLogin}
+      />
+
+      <View style={styles.divider}>
+        <View style={styles.dividerLine} />
+        <Text style={styles.dividerText}>o continúa con</Text>
+        <View style={styles.dividerLine} />
       </View>
 
       <View style={styles.social}>
-        <AppButton title="Continuar con Google" icon="logo-google" variant="secondary" loading={loadingAction === 'google'} onPress={handleGoogleLogin} />
+        <AppButton
+          title="Continuar con Google"
+          icon="google"
+          variant="secondary"
+          loading={loadingAction === 'google'}
+          onPress={handleGoogleLogin}
+          fullWidth
+        />
         {Platform.OS === 'ios' ? (
           <AppleAuthentication.AppleAuthenticationButton
             buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
             buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
             cornerRadius={nativeUI.radius}
             onPress={handleAppleLogin}
-            style={styles.appleButton}
+            style={styles.appleBtn}
           />
         ) : (
-          <AppButton title="Continuar con Apple" icon="logo-apple" variant="secondary" loading={loadingAction === 'apple'} onPress={handleAppleLogin} />
+          <AppButton
+            title="Continuar con Apple"
+            icon="apple"
+            variant="secondary"
+            loading={loadingAction === 'apple'}
+            onPress={handleAppleLogin}
+            fullWidth
+          />
         )}
       </View>
 
       <View style={styles.footer}>
-        <AppButton title="Recuperar contraseña" variant="ghost" onPress={() => router.push('/(auth)/forgot-password')} />
-        <Text style={styles.register} onPress={() => router.push('/(auth)/register')}>
-          No tengo cuenta, registrarme
-        </Text>
+        <TextLink
+          title="Olvidé mi contraseña"
+          onPress={() => router.push('/(auth)/forgot-password')}
+        />
+        <Text style={styles.footerText}>¿No tienes cuenta?</Text>
+        <TextLink title="Crear cuenta" onPress={() => router.push('/(auth)/register')} />
       </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    gap: 10,
-    marginTop: 24,
+  identity: {
+    gap: 16,
+    marginTop: 8,
   },
   logo: {
-    height: 64,
-    width: 64,
+    borderRadius: 14,
+    height: 56,
+    width: 56,
+    ...(Platform.OS === 'ios' ? { borderCurve: 'continuous' } : {}),
   },
-  form: {
-    gap: 14,
+  formCard: {
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderRadius: nativeUI.radius,
+    borderWidth: 1,
+    gap: 0,
+    overflow: 'hidden',
+    padding: 16,
+    ...nativeUI.curveStyle,
+    ...nativeUI.cardShadow,
   },
+  fieldDivider: {
+    backgroundColor: colors.border,
+    height: 1,
+    marginVertical: 14,
+  },
+
+  divider: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+  },
+  dividerLine: {
+    backgroundColor: colors.border,
+    flex: 1,
+    height: 1,
+  },
+  dividerText: {
+    color: colors.muted,
+    fontFamily: nativeUI.fontMedium,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+
   social: {
     gap: 10,
   },
-  appleButton: {
+  appleBtn: {
     height: nativeUI.controlHeight,
     width: '100%',
   },
+
   footer: {
     alignItems: 'center',
-    gap: 6,
+    gap: 2,
   },
-  register: {
+  footerText: {
     ...fontBase,
-    color: colors.primary,
-    fontSize: 15,
-    fontWeight: '700',
+    color: colors.muted,
+    fontSize: 14,
   },
 });

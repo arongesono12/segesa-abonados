@@ -7,14 +7,20 @@ import { nativeUI, useNativeLayout } from '@/theme/native-ui';
 
 type ScreenProps = PropsWithChildren<{
   scroll?: boolean;
+  topInset?: boolean;
 }>;
 
-export function Screen({ children, scroll = true }: ScreenProps) {
+export function Screen({ children, scroll = true, topInset = false }: ScreenProps) {
   const { maxContentWidth, isWide } = useNativeLayout();
-  const content = <View style={[styles.content, { maxWidth: maxContentWidth }, isWide && styles.wideContent]}>{children}</View>;
+  const edges = topInset ? (['top', 'left', 'right', 'bottom'] as const) : (['left', 'right', 'bottom'] as const);
+  const content = (
+    <View style={[styles.content, { maxWidth: maxContentWidth }, isWide && styles.wideContent]}>
+      {children}
+    </View>
+  );
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
+    <SafeAreaView style={styles.safeArea} edges={edges}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
         {scroll ? <ScrollView contentContainerStyle={styles.scroll}>{content}</ScrollView> : content}
       </KeyboardAvoidingView>
@@ -35,7 +41,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    gap: 18,
+    gap: nativeUI.sectionGap,
     padding: nativeUI.screenPadding,
     width: '100%',
   },

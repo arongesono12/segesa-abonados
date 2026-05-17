@@ -5,7 +5,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { AppButton } from '@/components/app-button';
 import { EmptyState } from '@/components/empty-state';
 import { Screen } from '@/components/screen';
-import { sharedStyles } from '@/components/shared-styles';
+import { ScreenHeader } from '@/components/screen-header';
 import { useApiResource } from '@/hooks/use-api-resource';
 import { electricityApi } from '@/services/electricity-api';
 import { colors } from '@/theme/colors';
@@ -25,13 +25,10 @@ export default function ProviderScreen() {
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <Text style={sharedStyles.title}>Elige tu proveedor</Text>
-        <Text style={sharedStyles.subtitle}>Selecciona la empresa que emite tus facturas de electricidad.</Text>
-      </View>
+      <ScreenHeader title="Elige tu proveedor" subtitle="Selecciona la empresa que emite tus facturas de electricidad." />
 
       {isLoading ? <ActivityIndicator color={colors.primary} /> : null}
-      {error ? <EmptyState icon="warning-outline" title="No pudimos cargar proveedores" message={error} /> : null}
+      {error ? <EmptyState icon="alert-outline" title="No pudimos cargar proveedores" message={error} /> : null}
       {!isLoading && !error && data?.length === 0 ? (
         <EmptyState title="Sin proveedores disponibles" message="Inténtalo de nuevo más tarde." />
       ) : null}
@@ -42,9 +39,10 @@ export default function ProviderScreen() {
 
           return (
             <Pressable
+              accessibilityRole="button"
               key={provider.id}
               onPress={() => setSelectedProvider(provider)}
-              style={[styles.providerCard, selected && styles.selectedCard]}>
+              style={({ pressed }) => [styles.providerCard, selected && styles.selectedCard, pressed && styles.pressed]}>
               <View style={[styles.logo, { backgroundColor: provider.logoColor }]}>
                 <Text style={styles.logoText}>{provider.name.slice(0, 2).toUpperCase()}</Text>
               </View>
@@ -52,13 +50,16 @@ export default function ProviderScreen() {
                 <Text style={styles.providerName}>{provider.name}</Text>
                 <Text style={styles.providerMeta}>{provider.country} · {provider.supportPhone}</Text>
               </View>
+              <View style={[styles.selectionMark, selected && styles.selectionMarkSelected]}>
+                {selected ? <Text style={styles.selectionText}>✓</Text> : null}
+              </View>
             </Pressable>
           );
         })}
       </View>
 
       <View style={styles.footer}>
-        <AppButton title="Continuar" disabled={!selectedProvider} onPress={continueToAccount} />
+        <AppButton title="Continuar" disabled={!selectedProvider} fullWidth onPress={continueToAccount} />
         {error ? <AppButton title="Reintentar" variant="secondary" onPress={refetch} /> : null}
       </View>
     </Screen>
@@ -66,9 +67,6 @@ export default function ProviderScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    gap: 10,
-  },
   list: {
     gap: 12,
   },
@@ -81,21 +79,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 14,
     padding: 14,
+    ...nativeUI.curveStyle,
+    ...nativeUI.cardShadow,
   },
   selectedCard: {
     borderColor: colors.primary,
     borderWidth: 2,
   },
+  pressed: {
+    opacity: 0.78,
+  },
   logo: {
     alignItems: 'center',
-    borderRadius: nativeUI.radius,
-    height: 46,
+    borderRadius: nativeUI.compactRadius,
+    height: 48,
     justifyContent: 'center',
-    width: 46,
+    width: 48,
+    ...nativeUI.curveStyle,
   },
   logoText: {
-    ...fontBase,
     color: colors.surface,
+    fontFamily: nativeUI.fontBlack,
     fontWeight: '900',
   },
   providerInfo: {
@@ -103,15 +107,34 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   providerName: {
-    ...fontBase,
     color: colors.text,
+    fontFamily: nativeUI.fontBlack,
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '900',
   },
   providerMeta: {
     ...fontBase,
     color: colors.muted,
     fontSize: 13,
+  },
+  selectionMark: {
+    alignItems: 'center',
+    borderColor: colors.border,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    height: 24,
+    justifyContent: 'center',
+    width: 24,
+  },
+  selectionMarkSelected: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  selectionText: {
+    color: colors.surface,
+    fontFamily: nativeUI.fontBlack,
+    fontSize: 13,
+    fontWeight: '900',
   },
   footer: {
     gap: 10,

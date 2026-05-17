@@ -6,6 +6,7 @@ import { AppButton } from '@/components/app-button';
 import { AppTextField } from '@/components/app-text-field';
 import { Screen } from '@/components/screen';
 import { sharedStyles } from '@/components/shared-styles';
+import { TextLink } from '@/components/text-link';
 import { useAuth } from '@/features/auth/auth-context';
 import { colors } from '@/theme/colors';
 import { fontBase } from '@/theme/native-ui';
@@ -49,7 +50,7 @@ export default function ForgotPasswordScreen() {
       {error ? <Text style={sharedStyles.errorText}>{error}</Text> : null}
       {message ? <Text style={styles.success}>{message}</Text> : null}
       <AppButton title="Enviar enlace" loading={isSubmitting} onPress={handleRecover} />
-      <AppButton title="Volver al inicio de sesión" variant="ghost" onPress={() => router.replace('/(auth)/login')} />
+      <TextLink title="Volver al inicio de sesión" onPress={() => router.replace('/(auth)/login')} />
     </Screen>
   );
 }

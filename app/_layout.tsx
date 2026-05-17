@@ -1,18 +1,51 @@
 import '../global.css';
 
+import {
+  Roboto_400Regular,
+  Roboto_500Medium,
+  Roboto_700Bold,
+  Roboto_900Black,
+} from '@expo-google-fonts/roboto';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import * as SystemUI from 'expo-system-ui';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { AuthProvider } from '@/features/auth/auth-context';
 import { colors } from '@/theme/colors';
-import { platformStackHeaderOptions } from '@/theme/native-ui';
+import { nativeUI, platformStackHeaderOptions } from '@/theme/native-ui';
 
 export const unstable_settings = {
   initialRouteName: 'index',
 };
 
+SplashScreen.preventAutoHideAsync().catch(() => {});
+
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Roboto_400Regular,
+    Roboto_500Medium,
+    Roboto_700Bold,
+    Roboto_900Black,
+  });
+
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(colors.background);
+  }, []);
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <AuthProvider>
       <Stack
@@ -21,7 +54,11 @@ export default function RootLayout() {
           headerStyle: { backgroundColor: colors.surface },
           headerShadowVisible: false,
           headerTintColor: colors.text,
-          headerTitleStyle: { fontWeight: '700' },
+          headerTitleStyle: {
+            color: colors.text,
+            fontFamily: nativeUI.fontBold,
+            fontWeight: '700',
+          },
           contentStyle: { backgroundColor: colors.background },
         }}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -33,7 +70,7 @@ export default function RootLayout() {
         <Stack.Screen name="payment/[invoiceId]" options={{ title: 'Método de pago' }} />
         <Stack.Screen name="payment/confirmation" options={{ title: 'Confirmación' }} />
       </Stack>
-      <StatusBar style="dark" />
+      <StatusBar backgroundColor={colors.background} style="dark" translucent />
     </AuthProvider>
   );
 }

@@ -1,34 +1,34 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Link, router } from 'expo-router';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import { Image, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { Screen } from '@/components/screen';
+import { TextLink } from '@/components/text-link';
 import { colors } from '@/theme/colors';
 import { fontBase, nativeUI, useNativeLayout } from '@/theme/native-ui';
 
 const benefits = [
-  { icon: 'receipt-outline' as const, label: 'Facturas al dia' },
-  { icon: 'card-outline' as const, label: 'Pagos seguros' },
-  { icon: 'flash-outline' as const, label: 'Cuentas vinculadas' },
-];
+  { icon: 'receipt-outline' as const, label: 'Facturas al día' },
+  { icon: 'credit-card-outline' as const, label: 'Pagos seguros' },
+  { icon: 'lightning-bolt-outline' as const, label: 'Contratos vinculados' },
+] as const;
 
 export default function WelcomeScreen() {
   const { isTablet } = useNativeLayout();
 
   return (
-    <Screen>
+    <Screen topInset>
       <View style={styles.container}>
-        <View style={[styles.banner, isTablet && styles.bannerTablet]}>
-          <View style={styles.bannerCopy}>
+        <View style={[styles.hero, isTablet && styles.heroTablet]}>
+          <View style={styles.heroCopy}>
             <Text style={styles.brand}>SEGESA Abonados</Text>
-            <Text style={styles.title}>Gestiona tu electricidad desde el movil</Text>
-            <Text style={styles.subtitle}>
+            <Text style={styles.heroTitle}>Gestiona tu electricidad desde el móvil</Text>
+            <Text style={styles.heroSub}>
               Consulta facturas, vincula contratos y confirma pagos sin desplazarte.
             </Text>
           </View>
-
-          <View style={styles.imageWrap}>
+          <View style={styles.heroImageWrap}>
             <Image
               accessibilityLabel="Clientes usando servicios digitales"
               resizeMode="contain"
@@ -39,38 +39,37 @@ export default function WelcomeScreen() {
         </View>
 
         <View style={styles.benefits}>
-          {benefits.map((benefit) => (
-            <View key={benefit.label} style={styles.benefitItem}>
+          {benefits.map((b) => (
+            <View key={b.label} style={styles.benefitChip}>
               <View style={styles.benefitIcon}>
-                <Ionicons name={benefit.icon} color={colors.primary} size={20} />
+                <MaterialCommunityIcons name={b.icon} color={colors.primary} size={20} />
               </View>
-              <Text style={styles.benefitText}>{benefit.label}</Text>
+              <Text style={styles.benefitLabel}>{b.label}</Text>
             </View>
           ))}
         </View>
 
-        <View style={styles.actions}>
+        <View style={styles.ctas}>
           <AppButton
-            title="Iniciar sesion"
-            icon="log-in-outline"
+            title="Iniciar sesión"
+            icon="login"
             onPress={() => router.push('/(auth)/login')}
-            style={styles.primaryButton}
           />
           <AppButton
             title="Crear cuenta"
-            icon="person-add-outline"
+            icon="account-plus-outline"
             variant="secondary"
             onPress={() => router.push('/(auth)/register')}
-            style={styles.secondaryButton}
           />
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.terms}>Al continuar aceptas las condiciones de uso de la plataforma.</Text>
-          <Link href="/(auth)/forgot-password" style={styles.link}>
-            Recuperar contrasena
-          </Link>
+          <Text style={styles.terms}>
+            Al continuar aceptas las condiciones de uso de la plataforma.
+          </Text>
+          <TextLink title="Recuperar contraseña" onPress={() => router.push('/(auth)/forgot-password')} />
         </View>
+
       </View>
     </Screen>
   );
@@ -79,71 +78,69 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: 18,
-    justifyContent: 'space-between',
+    gap: 14,
   },
-  banner: {
+  hero: {
     backgroundColor: colors.primary,
     borderRadius: nativeUI.radius,
-    minHeight: 390,
+    minHeight: 330,
     overflow: 'hidden',
     padding: 20,
+    ...nativeUI.curveStyle,
   },
-  bannerTablet: {
-    minHeight: 460,
-  },
-  bannerCopy: {
-    gap: 10,
-    zIndex: 1,
-  },
+  heroTablet: { minHeight: 400 },
+  heroCopy: { gap: 10, zIndex: 1 },
   brand: {
-    ...fontBase,
-    color: '#D7F4EA',
-    fontSize: 14,
+    color: colors.primaryLight,
+    fontFamily: nativeUI.fontBold,
+    fontSize: 12,
     fontWeight: '800',
     letterSpacing: 0,
     textTransform: 'uppercase',
   },
-  title: {
-    ...fontBase,
+  heroTitle: {
     color: colors.surface,
-    fontSize: 31,
+    fontFamily: nativeUI.fontBlack,
+    fontSize: Platform.select({ ios: 31, android: 29, default: 30 }),
     fontWeight: '900',
-    lineHeight: 37,
+    letterSpacing: 0,
+    lineHeight: 36,
+    maxWidth: 340,
   },
-  subtitle: {
+  heroSub: {
     ...fontBase,
-    color: '#E5F7F2',
-    fontSize: 16,
-    lineHeight: 23,
-    maxWidth: 380,
+    color: 'rgba(255,255,255,0.82)',
+    fontSize: 15,
+    lineHeight: 22,
+    maxWidth: 340,
   },
-  imageWrap: {
+  heroImageWrap: {
     alignItems: 'center',
     flex: 1,
     justifyContent: 'flex-end',
-    marginBottom: -16,
-    marginTop: 4,
+    marginBottom: -12,
+    marginTop: 8,
   },
   heroImage: {
     height: '100%',
-    maxHeight: 265,
-    width: '112%',
+    maxHeight: 210,
+    width: '104%',
   },
   benefits: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
   },
-  benefitItem: {
+  benefitChip: {
     alignItems: 'center',
     backgroundColor: colors.surface,
     borderColor: colors.border,
     borderRadius: nativeUI.radius,
     borderWidth: 1,
     flex: 1,
-    gap: 8,
-    minHeight: 96,
-    padding: 12,
+    gap: 7,
+    minHeight: 86,
+    padding: 10,
+    ...nativeUI.curveStyle,
     ...nativeUI.cardShadow,
   },
   benefitIcon: {
@@ -154,47 +151,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 36,
   },
-  benefitText: {
-    ...fontBase,
+  benefitLabel: {
     color: colors.text,
+    fontFamily: nativeUI.fontBold,
     fontSize: 12,
-    fontWeight: '800',
+    fontWeight: '700',
     lineHeight: 16,
     textAlign: 'center',
   },
-  actions: {
-    gap: 12,
-  },
-  primaryButton: {
-    borderColor: colors.primaryDark,
-    borderWidth: 1,
-    minHeight: 58,
-    width: '100%',
-  },
-  secondaryButton: {
-    backgroundColor: colors.surface,
-    borderColor: colors.primary,
-    borderWidth: 1.5,
-    minHeight: 56,
-    width: '100%',
-    ...nativeUI.cardShadow,
-  },
+  ctas: { gap: 11 },
   footer: {
     alignItems: 'center',
     gap: 8,
+    paddingBottom: 4,
   },
   terms: {
     ...fontBase,
     color: colors.muted,
-    fontSize: 13,
-    lineHeight: 19,
-    textAlign: 'center',
-  },
-  link: {
-    ...fontBase,
-    color: colors.primary,
-    fontSize: 15,
-    fontWeight: '800',
+    fontSize: 12,
+    lineHeight: 18,
     textAlign: 'center',
   },
 });

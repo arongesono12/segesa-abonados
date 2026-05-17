@@ -6,10 +6,11 @@ import { nativeUI } from '@/theme/native-ui';
 export const sharedStyles = StyleSheet.create({
   title: {
     color: colors.text,
-    fontFamily: nativeUI.fontFamily,
-    fontSize: 30,
-    fontWeight: '800',
-    lineHeight: 36,
+    fontFamily: nativeUI.fontBlack,
+    fontSize: Platform.select({ ios: 30, android: 28, default: 28 }),
+    fontWeight: '900',
+    letterSpacing: 0,
+    lineHeight: Platform.select({ ios: 36, android: 34, default: 34 }),
   },
   subtitle: {
     color: colors.textSoft,
@@ -23,6 +24,7 @@ export const sharedStyles = StyleSheet.create({
     borderRadius: nativeUI.radius,
     borderWidth: 1,
     padding: 16,
+    ...nativeUI.curveStyle,
     ...nativeUI.cardShadow,
   },
   input: {
@@ -35,8 +37,8 @@ export const sharedStyles = StyleSheet.create({
     fontSize: 16,
     minHeight: nativeUI.inputHeight,
     paddingHorizontal: 16,
-    // paddingVertical keeps text vertically centred on Android
-    paddingVertical: Platform.OS === 'android' ? 14 : 0,
+    paddingVertical: Platform.OS === 'android' ? 12 : 0,
+    ...nativeUI.curveStyle,
   },
   inputFocused: {
     borderColor: colors.primary,
@@ -48,13 +50,21 @@ export const sharedStyles = StyleSheet.create({
   },
   label: {
     color: colors.text,
-    fontFamily: nativeUI.fontFamily,
+    fontFamily: nativeUI.fontBold,
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
+  },
+  helperText: {
+    color: colors.muted,
+    fontFamily: nativeUI.fontFamily,
+    fontSize: 13,
+    lineHeight: 18,
   },
   errorText: {
     color: colors.danger,
-    fontFamily: nativeUI.fontFamily,
+    fontFamily: nativeUI.fontBold,
     fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 18,
   },
 });

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text, TextInput, TextInputProps, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 
 import { sharedStyles } from '@/components/shared-styles';
 import { colors } from '@/theme/colors';
@@ -7,13 +7,14 @@ import { colors } from '@/theme/colors';
 type AppTextFieldProps = TextInputProps & {
   label: string;
   error?: string;
+  helperText?: string;
 };
 
-export function AppTextField({ label, error, style, onFocus, onBlur, ...props }: AppTextFieldProps) {
+export function AppTextField({ label, error, helperText, style, onFocus, onBlur, ...props }: AppTextFieldProps) {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <View style={{ gap: 8 }}>
+    <View style={styles.container}>
       <Text style={sharedStyles.label}>{label}</Text>
       <TextInput
         accessibilityLabel={label}
@@ -32,6 +33,13 @@ export function AppTextField({ label, error, style, onFocus, onBlur, ...props }:
         {...props}
       />
       {error ? <Text style={sharedStyles.errorText}>{error}</Text> : null}
+      {!error && helperText ? <Text style={sharedStyles.helperText}>{helperText}</Text> : null}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 8,
+  },
+});
