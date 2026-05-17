@@ -1,12 +1,10 @@
-import { router } from 'expo-router';
+import { Link } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { AppTextField } from '@/components/app-text-field';
 import { Screen } from '@/components/screen';
-import { sharedStyles } from '@/components/shared-styles';
-import { TextLink } from '@/components/text-link';
 import { useAuth } from '@/features/auth/auth-context';
 import { colors } from '@/theme/colors';
 import { fontBase } from '@/theme/native-ui';
@@ -32,6 +30,10 @@ export default function ForgotPasswordScreen() {
       setIsSubmitting(true);
       await recoverPassword(email);
       setMessage('Te hemos enviado instrucciones para restablecer la contraseña.');
+      if (process.env.EXPO_OS === 'ios') {
+        const haptics = require('expo-haptics');
+        haptics.notificationAsync(haptics.NotificationFeedbackType.Success);
+      }
     } catch (caughtError) {
       setError(getErrorMessage(caughtError));
     } finally {
@@ -41,29 +43,22 @@ export default function ForgotPasswordScreen() {
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <Text style={sharedStyles.title}>Recuperar contraseña</Text>
-        <Text style={sharedStyles.subtitle}>Recibirás un enlace seguro para crear una nueva contraseña.</Text>
+      <View style={{ gap: 10, marginTop: 24 }}>
+        <Text style={{ color: colors.text, fontSize: 30, fontWeight: '800', lineHeight: 36 }}>
+          Recuperar contraseña
+        </Text>
+        <Text style={{ color: colors.textSoft, fontSize: 16, lineHeight: 24 }}>
+          Recibirás un enlace seguro para crear una nueva contraseña.
+        </Text>
       </View>
 
       <AppTextField autoCapitalize="none" keyboardType="email-address" label="Correo electrónico" onChangeText={setEmail} value={email} />
-      {error ? <Text style={sharedStyles.errorText}>{error}</Text> : null}
-      {message ? <Text style={styles.success}>{message}</Text> : null}
+      {error ? <Text style={{ color: colors.danger, fontSize: 13 }}>{error}</Text> : null}
+      {message ? <Text style={{ color: colors.success, fontSize: 14, fontWeight: '700' }}>{message}</Text> : null}
       <AppButton title="Enviar enlace" loading={isSubmitting} onPress={handleRecover} />
-      <TextLink title="Volver al inicio de sesión" onPress={() => router.replace('/(auth)/login')} />
+      <Link href="/(auth)/login" asChild>
+        <AppButton title="Volver al inicio de sesión" variant="ghost" onPress={() => {}} />
+      </Link>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    gap: 10,
-    marginTop: 24,
-  },
-  success: {
-    ...fontBase,
-    color: colors.success,
-    fontSize: 14,
-    fontWeight: '700',
-  },
-});

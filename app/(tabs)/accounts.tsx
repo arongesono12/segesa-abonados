@@ -1,19 +1,20 @@
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Link } from 'expo-router';
+import { Text, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { ActionRow } from '@/components/action-row';
 import { AppButton } from '@/components/app-button';
 import { EmptyState } from '@/components/empty-state';
 import { Screen } from '@/components/screen';
-import { ScreenHeader } from '@/components/screen-header';
-import { sharedStyles } from '@/components/shared-styles';
 import { useAuth } from '@/features/auth/auth-context';
 import { electricityApi } from '@/services/electricity-api';
 import { colors } from '@/theme/colors';
 import { fontBase, nativeUI } from '@/theme/native-ui';
 import { formatDate } from '@/utils/format';
 import { getErrorMessage } from '@/utils/validation';
+
+const AnimatedView = Animated.createAnimatedComponent(View);
+const AnimatedText = Animated.createAnimatedComponent(Text);
 
 export default function AccountsScreen() {
   const { accounts, setPrimaryAccount, updateAccounts } = useAuth();
@@ -49,104 +50,69 @@ export default function AccountsScreen() {
 
   return (
     <Screen>
-      <ScreenHeader title="Cuentas eléctricas" subtitle="Administra los contratos vinculados a tu perfil." />
-      {error ? <Text style={sharedStyles.errorText}>{error}</Text> : null}
+      <AnimatedText
+        style={{ color: colors.text, fontSize: 30, fontWeight: '800', lineHeight: 36 }}
+        entering={FadeIn.duration(300)}>
+        Cuentas eléctricas
+      </AnimatedText>
+      <AnimatedText
+        style={{ color: colors.textSoft, fontSize: 16, lineHeight: 24 }}
+        entering={FadeIn.duration(300).delay(50)}>
+        Administra los contratos vinculados a tu perfil.
+      </AnimatedText>
 
       {accounts.length === 0 ? (
-        <EmptyState title="Sin cuentas asociadas" message="Añade una cuenta para consultar facturas y pagos." />
+        <EmptyState sfIcon="folder.badge.plus" title="Sin cuentas asociadas" message="Añade una cuenta para consultar facturas y pagos." />
       ) : null}
 
-      <View style={styles.list}>
-        {accounts.map((account) => (
-          <View key={account.id} style={styles.accountCard}>
-            <View style={styles.row}>
-              <Text style={styles.provider}>{account.providerName}</Text>
-              <Text style={styles.badge}>{account.isPrimary ? 'Principal' : account.status}</Text>
-            </View>
-            <Text style={styles.contract}>Contrato {account.contractNumber}</Text>
-            <Text style={styles.meta}>{account.customerName}</Text>
-            <Text style={styles.meta}>{account.serviceAddress}</Text>
-            <Text style={styles.sync}>Sincronizado {formatDate(account.lastSyncAt)}</Text>
-            {!account.isPrimary ? (
-              <AppButton
-                title="Hacer principal"
-                icon="star-outline"
-                variant="secondary"
-                loading={busyAction === `primary:${account.id}`}
-                onPress={() => handleSetPrimary(account.id)}
-                style={styles.cardAction}
-              />
-            ) : null}
+      {accounts.map((account, index) => (
+        <AnimatedView
+          key={account.id}
+          style={{
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+            borderRadius: 8,
+            borderCurve: 'continuous',
+            borderWidth: 1,
+            padding: 16,
+            gap: 5,
+          }}
+          entering={FadeIn.duration(300).delay(index * 50)}>
+          <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: colors.text, fontSize: 18, fontWeight: '900' }}>
+              {account.providerName}
+            </Text>
+            <Text style={{
+              backgroundColor: colors.surfaceAlt,
+              borderRadius: 8,
+              borderCurve: 'continuous',
+              color: colors.primary,
+              fontSize: 12,
+              fontWeight: '800',
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+            }}>
+              {account.isPrimary ? 'Principal' : account.status}
+            </Text>
           </View>
-        ))}
-      </View>
+          <Text selectable style={{ color: colors.textSoft, fontSize: 15, fontWeight: '700', marginTop: 10 }}>
+            Contrato {account.contractNumber}
+          </Text>
+          <Text selectable style={{ color: colors.muted, fontSize: 13, marginTop: 5 }}>
+            {account.customerName}
+          </Text>
+          <Text selectable style={{ color: colors.muted, fontSize: 13, marginTop: 5 }}>
+            {account.serviceAddress}
+          </Text>
+          <Text selectable style={{ color: colors.muted, fontSize: 12, marginTop: 12 }}>
+            Sincronizado {formatDate(account.lastSyncAt)}
+          </Text>
+        </AnimatedView>
+      ))}
 
-      <View style={styles.actions}>
-        <ActionRow icon="refresh" onPress={handleSync} title={busyAction === 'sync' ? 'Sincronizando...' : 'Sincronizar cuentas'} />
-        <ActionRow icon="plus-circle-outline" onPress={() => router.push('/onboarding/provider')} title="Añadir otra cuenta" />
-      </View>
+      <Link href="/onboarding/provider" asChild>
+        <AppButton title="Añadir otra cuenta" sfIcon="plus.circle.fill" variant="secondary" onPress={() => {}} />
+      </Link>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  list: {
-    gap: 12,
-  },
-  accountCard: {
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-    borderRadius: nativeUI.radius,
-    borderWidth: 1,
-    padding: 16,
-    ...nativeUI.curveStyle,
-    ...nativeUI.cardShadow,
-  },
-  row: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  provider: {
-    color: colors.text,
-    fontFamily: nativeUI.fontBlack,
-    fontSize: 19,
-    fontWeight: '900',
-  },
-  badge: {
-    backgroundColor: colors.surfaceAlt,
-    borderRadius: 999,
-    color: colors.primary,
-    fontFamily: nativeUI.fontBlack,
-    fontSize: 12,
-    fontWeight: '900',
-    overflow: 'hidden',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-  contract: {
-    color: colors.textSoft,
-    fontFamily: nativeUI.fontBold,
-    fontSize: 15,
-    fontWeight: '800',
-    marginTop: 12,
-  },
-  meta: {
-    ...fontBase,
-    color: colors.muted,
-    fontSize: 14,
-    marginTop: 5,
-  },
-  sync: {
-    ...fontBase,
-    color: colors.muted,
-    fontSize: 12,
-    marginTop: 12,
-  },
-  cardAction: {
-    marginTop: 14,
-  },
-  actions: {
-    gap: 10,
-  },
-});

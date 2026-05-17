@@ -1,13 +1,10 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Link, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { EmptyState } from '@/components/empty-state';
 import { Screen } from '@/components/screen';
-import { sharedStyles } from '@/components/shared-styles';
-import { TextLink } from '@/components/text-link';
 import { useApiResource } from '@/hooks/use-api-resource';
 import { electricityApi } from '@/services/electricity-api';
 import { colors } from '@/theme/colors';
@@ -32,47 +29,59 @@ export default function InvoiceDetailsScreen() {
   return (
     <Screen>
       {isLoading ? <ActivityIndicator color={colors.primary} /> : null}
-      {error ? <EmptyState icon="alert-outline" title="Factura no disponible" message={error} /> : null}
-      {invoice && status ? (
+      {error ? <EmptyState sfIcon="exclamationmark.triangle.fill" title="Factura no disponible" message={error} /> : null}
+      {invoice ? (
         <>
-          <View style={styles.header}>
-            <Text style={sharedStyles.title}>{invoice.period}</Text>
-            <Text style={sharedStyles.subtitle}>Factura {invoice.invoiceNumber}</Text>
+          <View style={{ gap: 8 }}>
+            <Text style={{ color: colors.text, fontSize: 30, fontWeight: '800', lineHeight: 36 }}>
+              {invoice.period}
+            </Text>
+            <Text style={{ color: colors.textSoft, fontSize: 16, lineHeight: 24 }}>
+              Factura {invoice.invoiceNumber}
+            </Text>
           </View>
 
-          <View style={styles.amountCard}>
-            <Text style={styles.amountLabel}>Total a pagar</Text>
-            <Text style={styles.amount}>{formatMoney(invoice.amount, invoice.currency)}</Text>
-            <View style={styles.statusBadge}>
-              <MaterialCommunityIcons name={status.icon} size={14} color={status.color} />
-              <Text style={[styles.statusText, { color: status.color }]}>{status.label}</Text>
-            </View>
+          <View style={{
+            backgroundColor: colors.primary,
+            borderRadius: 8,
+            borderCurve: 'continuous',
+            gap: 8,
+            padding: 18,
+          }}>
+            <Text style={{ color: '#DDEFEA', fontSize: 14, fontWeight: '700' }}>
+              Total
+            </Text>
+            <Text selectable style={{ color: colors.surface, fontSize: 36, fontWeight: '900', fontVariant: ['tabular-nums'] }}>
+              {formatMoney(invoice.amount, invoice.currency)}
+            </Text>
+            <Text style={{ color: colors.surface, fontSize: 15, fontWeight: '800' }}>
+              {invoice.status === 'paid' ? 'Pagada' : 'Pendiente de pago'}
+            </Text>
           </View>
 
-          <View style={sharedStyles.card}>
-            <Row label="Número" value={invoice.invoiceNumber} />
-            <Row label="Periodo" value={invoice.period} />
+          <View style={{
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+            borderRadius: 8,
+            borderCurve: 'continuous',
+            borderWidth: 1,
+            padding: 16,
+            gap: 0,
+          }}>
             <Row label="Fecha de emisión" value={formatDate(invoice.issueDate)} />
             <Row label="Fecha límite" value={formatDate(invoice.dueDate)} />
             <Row label="Consumo" value={`${invoice.kwh} kWh`} />
           </View>
 
-          {invoice.status === 'pending' || invoice.status === 'expired' ? (
-            <AppButton
-              title="Pagar factura"
-              icon="credit-card-outline"
-              onPress={() => router.push(`/payment/${invoice.id}`)}
-            />
-          ) : invoice.status === 'paid' ? (
-            <AppButton
-              title="Ver historial de pagos"
-              icon="clock-outline"
-              variant="secondary"
-              onPress={() => router.push('/(tabs)/history')}
-            />
-          ) : null}
-
-          <TextLink title="Volver a facturas" onPress={() => router.back()} />
+          {invoice.status !== 'paid' ? (
+            <Link href={`/payment/${invoice.id}`} asChild>
+              <AppButton title="Pagar factura" sfIcon="creditcard" onPress={() => {}} />
+            </Link>
+          ) : (
+            <Link href="/(tabs)/history" asChild>
+              <AppButton title="Ver historial" sfIcon="clock" variant="secondary" onPress={() => {}} />
+            </Link>
+          )}
         </>
       ) : null}
     </Screen>
@@ -81,67 +90,15 @@ export default function InvoiceDetailsScreen() {
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <View style={styles.row}>
-      <Text style={styles.rowLabel}>{label}</Text>
-      <Text style={styles.rowValue}>{value}</Text>
+    <View style={{
+      borderBottomColor: colors.border,
+      borderBottomWidth: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingVertical: 12,
+    }}>
+      <Text style={{ color: colors.muted, fontSize: 14 }}>{label}</Text>
+      <Text selectable style={{ color: colors.text, fontSize: 14, fontWeight: '800' }}>{value}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    gap: 6,
-  },
-  amountCard: {
-    backgroundColor: colors.primary,
-    borderRadius: nativeUI.radius,
-    gap: 10,
-    padding: 20,
-  },
-  amountLabel: {
-    ...fontBase,
-    color: colors.primaryLight,
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  amount: {
-    ...fontBase,
-    color: colors.surface,
-    fontSize: 36,
-    fontWeight: '900',
-    fontVariant: ['tabular-nums'],
-  },
-  statusBadge: {
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 20,
-    flexDirection: 'row',
-    gap: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-  statusText: {
-    ...fontBase,
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  row: {
-    borderBottomColor: colors.border,
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-  },
-  rowLabel: {
-    ...fontBase,
-    color: colors.muted,
-    fontSize: 14,
-  },
-  rowValue: {
-    ...fontBase,
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '800',
-  },
-});

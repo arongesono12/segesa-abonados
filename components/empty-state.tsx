@@ -1,48 +1,48 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
+import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 
 import { colors } from '@/theme/colors';
 import { nativeUI } from '@/theme/native-ui';
 
+const AnimatedView = Animated.createAnimatedComponent(View);
+const AnimatedText = Animated.createAnimatedComponent(Text);
+const AnimatedImage = Animated.createAnimatedComponent(Image);
+
 type EmptyStateProps = {
-  icon?: string;
+  sfIcon?: string;
   title: string;
   message: string;
 };
 
-export function EmptyState({ icon = 'check-circle-outline', title, message }: EmptyStateProps) {
+export function EmptyState({ sfIcon = 'checkmark.circle.fill', title, message }: EmptyStateProps) {
   return (
-    <View style={styles.container}>
-      <MaterialCommunityIcons name={icon as keyof typeof MaterialCommunityIcons.glyphMap} color={colors.primary} size={36} />
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.message}>{message}</Text>
-    </View>
+    <AnimatedView
+      style={{
+        alignItems: 'center',
+        backgroundColor: colors.surface,
+        borderColor: colors.border,
+        borderRadius: 8,
+        borderCurve: 'continuous',
+        borderWidth: 1,
+        gap: 8,
+        padding: 24,
+      }}
+      entering={FadeIn.duration(300)}>
+      <AnimatedImage
+        source={{ uri: `sf=${sfIcon}` }}
+        style={{ width: 36, height: 36, tintColor: colors.primary }}
+        entering={ZoomIn.duration(400).delay(100)}
+      />
+      <AnimatedText
+        style={{ color: colors.text, fontSize: 18, fontWeight: '800', textAlign: 'center' }}
+        entering={FadeIn.duration(300).delay(150)}>
+        {title}
+      </AnimatedText>
+      <AnimatedText
+        style={{ color: colors.textSoft, fontSize: 14, lineHeight: 20, textAlign: 'center' }}
+        entering={FadeIn.duration(300).delay(200)}>
+        {message}
+      </AnimatedText>
+    </AnimatedView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-    borderRadius: nativeUI.radius,
-    borderWidth: 1,
-    gap: 8,
-    padding: 24,
-    ...nativeUI.curveStyle,
-  },
-  title: {
-    color: colors.text,
-    fontFamily: nativeUI.fontBold,
-    fontSize: 18,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  message: {
-    color: colors.textSoft,
-    fontFamily: nativeUI.fontFamily,
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: 'center',
-  },
-});

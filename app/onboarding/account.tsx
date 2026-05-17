@@ -1,11 +1,10 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { AppTextField } from '@/components/app-text-field';
 import { Screen } from '@/components/screen';
-import { ScreenHeader } from '@/components/screen-header';
 import { useAuth } from '@/features/auth/auth-context';
 import { electricityApi } from '@/services/electricity-api';
 import { colors } from '@/theme/colors';
@@ -31,7 +30,10 @@ export default function AccountOnboardingScreen() {
       setIsSubmitting(true);
       const account = await electricityApi.validateAccount(providerId, contractNumber);
       await savePrimaryAccount(account);
-      router.replace('/(tabs)');
+      if (process.env.EXPO_OS === 'ios') {
+        const haptics = require('expo-haptics');
+        haptics.notificationAsync(haptics.NotificationFeedbackType.Success);
+      }
     } catch (caughtError) {
       setError(getErrorMessage(caughtError));
     } finally {
@@ -41,62 +43,41 @@ export default function AccountOnboardingScreen() {
 
   return (
     <Screen>
-      <ScreenHeader
-        title="Vincula tu cuenta eléctrica"
-        subtitle="Usaremos este identificador para consultar facturas, sincronizar tu perfil y confirmar pagos."
+      <View style={{ gap: 10 }}>
+        <Text style={{ color: colors.text, fontSize: 30, fontWeight: '800', lineHeight: 36 }}>
+          Vincula tu cuenta eléctrica
+        </Text>
+        <Text style={{ color: colors.textSoft, fontSize: 16, lineHeight: 24 }}>
+          Usaremos este identificador para consultar facturas, sincronizar tu perfil y confirmar pagos.
+        </Text>
+      </View>
+
+      <View style={{
+        backgroundColor: colors.surfaceAlt,
+        borderColor: colors.border,
+        borderRadius: 8,
+        borderCurve: 'continuous',
+        borderWidth: 1,
+        gap: 4,
+        padding: 16,
+      }}>
+        <Text style={{ color: colors.primaryDark, fontSize: 15, fontWeight: '800' }}>
+          Dato obligatorio
+        </Text>
+        <Text style={{ color: colors.textSoft, fontSize: 14, lineHeight: 20 }}>
+          Puedes encontrarlo en una factura impresa o en tu contrato de suministro.
+        </Text>
+      </View>
+
+      <AppTextField
+        autoCapitalize="characters"
+        label="Número de cuenta, contrato o abonado"
+        onChangeText={setContractNumber}
+        placeholder="Ej. SEG-123456"
+        value={contractNumber}
       />
-
-      <View style={styles.notice}>
-        <Text style={styles.noticeTitle}>Dato obligatorio</Text>
-        <Text style={styles.noticeText}>Puedes encontrarlo en una factura impresa o en tu contrato de suministro.</Text>
-      </View>
-
-      <View style={styles.formCard}>
-        <AppTextField
-          autoCapitalize="characters"
-          error={error}
-          helperText="Ejemplo: SEG-123456"
-          label="Número de cuenta, contrato o abonado"
-          onChangeText={setContractNumber}
-          placeholder="SEG-123456"
-          value={contractNumber}
-        />
-      </View>
-
+      {error ? <Text style={{ color: colors.danger, fontSize: 13 }}>{error}</Text> : null}
       <AppButton title="Validar y guardar" loading={isSubmitting} onPress={validateAccount} />
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  notice: {
-    backgroundColor: colors.surfaceAlt,
-    borderColor: colors.border,
-    borderRadius: nativeUI.radius,
-    borderWidth: 1,
-    gap: 6,
-    padding: 16,
-    ...nativeUI.curveStyle,
-  },
-  noticeTitle: {
-    color: colors.primaryDark,
-    fontFamily: nativeUI.fontBlack,
-    fontSize: 15,
-    fontWeight: '900',
-  },
-  noticeText: {
-    ...fontBase,
-    color: colors.textSoft,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  formCard: {
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-    borderRadius: nativeUI.radius,
-    borderWidth: 1,
-    padding: 16,
-    ...nativeUI.curveStyle,
-    ...nativeUI.cardShadow,
-  },
-});

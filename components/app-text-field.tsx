@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 
-import { sharedStyles } from '@/components/shared-styles';
 import { colors } from '@/theme/colors';
 
 type AppTextFieldProps = TextInputProps & {
@@ -14,26 +13,38 @@ export function AppTextField({ label, error, helperText, style, onFocus, onBlur,
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <View style={styles.container}>
-      <Text style={sharedStyles.label}>{label}</Text>
+    <View style={{ gap: 8 }}>
+      <Text style={{
+        color: colors.text,
+        fontSize: 14,
+        fontWeight: '700',
+      }}>
+        {label}
+      </Text>
       <TextInput
         accessibilityLabel={label}
         autoCorrect={false}
         returnKeyType="done"
         placeholderTextColor={colors.muted}
-        underlineColorAndroid="transparent"
-        style={[
-          sharedStyles.input,
-          isFocused && sharedStyles.inputFocused,
-          error ? sharedStyles.inputError : null,
-          style,
-        ]}
-        onFocus={(e) => { setIsFocused(true); onFocus?.(e); }}
-        onBlur={(e) => { setIsFocused(false); onBlur?.(e); }}
+        style={[{
+          backgroundColor: colors.surface,
+          borderColor: error ? colors.danger : colors.border,
+          borderRadius: 8,
+          borderCurve: 'continuous',
+          borderWidth: 1,
+          color: colors.text,
+          fontSize: 16,
+          minHeight: 52,
+          paddingHorizontal: 14,
+        }, style]}
         {...props}
       />
-      {error ? <Text style={sharedStyles.errorText}>{error}</Text> : null}
-      {!error && helperText ? <Text style={sharedStyles.helperText}>{helperText}</Text> : null}
+      {error ? <Text style={{
+        color: colors.danger,
+        fontSize: 13,
+      }}>
+        {error}
+      </Text> : null}
     </View>
   );
 }
