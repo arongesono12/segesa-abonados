@@ -12,7 +12,20 @@
       "Bash(npm install *)",
       "Bash(npm audit *)",
       "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('expo:', p.dependencies.expo, '\\\\nexpo-router:', p.dependencies['expo-router']\\)\")",
-      "Bash(node -e \"console.log\\(require\\('./node_modules/expo/package.json'\\).version\\)\")"
+      "Bash(node -e \"console.log\\(require\\('./node_modules/expo/package.json'\\).version\\)\")",
+      "Bash(node -e \"const p=require\\('./node_modules/expo-router/package.json'\\); console.log\\('version:', p.version\\); const exps=p.exports||{}; const keys=Object.keys\\(exps\\); console.log\\('has internal/routing:', keys.includes\\('./internal/routing'\\) || JSON.stringify\\(exps\\).includes\\('internal/routing'\\)\\)\")",
+      "Bash(node -e \"const p=require\\('./node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/package.json'\\); console.log\\('router-server version:', p.version\\); console.log\\('peerDeps:', JSON.stringify\\(p.peerDependencies||{}\\)\\)\")",
+      "Bash(npm show *)",
+      "Bash(node -e \"process.stdin.resume\\(\\); let d=''; process.stdin.on\\('data',c=>d+=c\\); process.stdin.on\\('end',\\(\\)=>{ const vs=JSON.parse\\(d\\); console.log\\('latest 6.x versions:', vs.slice\\(-5\\).join\\(', '\\)\\); }\\)\")",
+      "Bash(npx expo *)",
+      "Bash(node -e \"const p=require\\('./node_modules/expo/package.json'\\); const deps=p.dependencies||{}; const peerDeps=p.peerDependencies||{}; console.log\\('expo peer deps:', JSON.stringify\\(peerDeps, null, 2\\)\\)\")",
+      "Bash(node -e \"const p=require\\('./node_modules/expo/bundledNativeModules.json'\\); console.log\\(JSON.stringify\\(p, null, 2\\)\\)\")",
+      "Bash(node -e \"const p=require\\('./node_modules/expo/bundledNativeModules.json'\\); const keys=['react-native-gesture-handler','react-native-reanimated','react-native-safe-area-context','react-native-screens','react-native-web']; keys.forEach\\(k=>console.log\\(k+':', p[k]\\)\\)\")",
+      "Bash(node -e \"const p=require\\('./node_modules/expo-router/package.json'\\); console.log\\('expo-router version:', p.version\\); const exps=p.exports||{}; console.log\\('has ./internal/routing:', './internal/routing' in exps\\)\")",
+      "Bash(node -e \"require\\('expo-router/internal/routing'\\)\")",
+      "Bash(node -e \"try { const m = require\\('expo-router/internal/routing'\\); console.log\\('SUCCESS - module loaded, keys:', Object.keys\\(m||{}\\).slice\\(0,5\\)\\); } catch\\(e\\) { console.log\\('ERROR:', e.message\\); }\")",
+      "Bash(node -e \"require\\('./node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/build/typed-routes/index.js'\\)\")",
+      "Bash(node -e \"const p=require\\('./node_modules/react-native-worklets/package.json'\\); console.log\\('worklets version:', p.version\\)\")"
     ]
   }
 }
