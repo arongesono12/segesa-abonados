@@ -1,8 +1,8 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Image, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
+import { PlatformIcon } from '@/components/platform-icon';
 import { Screen } from '@/components/screen';
 import { TextLink } from '@/components/text-link';
 import { colors } from '@/theme/colors';
@@ -42,7 +42,7 @@ export default function WelcomeScreen() {
           {benefits.map((b) => (
             <View key={b.label} style={styles.benefitChip}>
               <View style={styles.benefitIcon}>
-                <MaterialCommunityIcons name={b.icon} color={colors.primary} size={20} />
+                <PlatformIcon name={b.icon} color={colors.primary} size={20} />
               </View>
               <Text style={styles.benefitLabel}>{b.label}</Text>
             </View>

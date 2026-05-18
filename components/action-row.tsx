@@ -1,6 +1,6 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { PlatformIcon } from '@/components/platform-icon';
 import { colors } from '@/theme/colors';
 import { nativeUI } from '@/theme/native-ui';
 
@@ -21,13 +21,13 @@ export function ActionRow({ title, subtitle, icon, onPress, destructive }: Actio
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
       <View style={[styles.iconWrap, { backgroundColor: destructive ? '#FEF2F2' : colors.surfaceAlt }]}>
-        <MaterialCommunityIcons name={icon as keyof typeof MaterialCommunityIcons.glyphMap} color={tint} size={20} />
+        <PlatformIcon name={icon} color={tint} size={20} />
       </View>
       <View style={styles.copy}>
         <Text style={[styles.title, { color: destructive ? colors.danger : colors.text }]}>{title}</Text>
         {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
       </View>
-      <MaterialCommunityIcons name="chevron-right" color={colors.muted} size={18} />
+      <PlatformIcon name="chevron-right" color={colors.muted} size={18} />
     </Pressable>
   );
 }

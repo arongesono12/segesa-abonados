@@ -25,7 +25,8 @@
       "Bash(node -e \"require\\('expo-router/internal/routing'\\)\")",
       "Bash(node -e \"try { const m = require\\('expo-router/internal/routing'\\); console.log\\('SUCCESS - module loaded, keys:', Object.keys\\(m||{}\\).slice\\(0,5\\)\\); } catch\\(e\\) { console.log\\('ERROR:', e.message\\); }\")",
       "Bash(node -e \"require\\('./node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/build/typed-routes/index.js'\\)\")",
-      "Bash(node -e \"const p=require\\('./node_modules/react-native-worklets/package.json'\\); console.log\\('worklets version:', p.version\\)\")"
+      "Bash(node -e \"const p=require\\('./node_modules/react-native-worklets/package.json'\\); console.log\\('worklets version:', p.version\\)\")",
+      "Bash(Rename-Item -Path \"C:\\\\Users\\\\AronEsono\\\\Desktop\\\\Proyectos\\\\Segesa-Abonados\\\\metro.config.js\" -NewName \"metro.config.cjs\")"
     ]
   }
 }

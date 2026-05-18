@@ -1,8 +1,8 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
+import { PlatformIcon } from '@/components/platform-icon';
 import { Screen } from '@/components/screen';
 import { colors } from '@/theme/colors';
 import { fontBase, nativeUI } from '@/theme/native-ui';
@@ -15,7 +15,7 @@ export default function PaymentConfirmationScreen() {
     <Screen>
       <View style={styles.container}>
         <View style={styles.check}>
-          <MaterialCommunityIcons name="check" color={colors.surface} size={44} />
+          <PlatformIcon name="check" color={colors.surface} size={44} weight="bold" />
         </View>
         <Text style={styles.title}>Pago confirmado</Text>
         <Text style={styles.message}>

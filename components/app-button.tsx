@@ -1,7 +1,7 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
+import { PlatformIcon } from '@/components/platform-icon';
 import { colors } from '@/theme/colors';
 import { nativeUI } from '@/theme/native-ui';
 
@@ -66,7 +66,7 @@ export function AppButton({
     <ActivityIndicator color={variant === 'primary' ? colors.surface : colors.primary} size="small" />
   ) : (
     <>
-      {icon ? <MaterialCommunityIcons name={icon as keyof typeof MaterialCommunityIcons.glyphMap} size={18} color={iconColor} /> : null}
+      {icon ? <PlatformIcon name={icon} size={18} color={iconColor} weight={variant === 'primary' ? 'semibold' : 'regular'} /> : null}
       <Text adjustsFontSizeToFit numberOfLines={1} style={[styles.text, { color: textColor }]}>
         {title}
       </Text>

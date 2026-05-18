@@ -1,8 +1,8 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { ActionRow } from '@/components/action-row';
+import { AppIconName, PlatformIcon } from '@/components/platform-icon';
 import { Screen } from '@/components/screen';
 import { ScreenHeader } from '@/components/screen-header';
 import { useAuth } from '@/features/auth/auth-context';

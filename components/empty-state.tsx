@@ -1,6 +1,6 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { PlatformIcon } from '@/components/platform-icon';
 import { colors } from '@/theme/colors';
 import { nativeUI } from '@/theme/native-ui';
 
@@ -13,7 +13,7 @@ type EmptyStateProps = {
 export function EmptyState({ icon = 'check-circle-outline', title, message }: EmptyStateProps) {
   return (
     <View style={styles.container}>
-      <MaterialCommunityIcons name={icon as keyof typeof MaterialCommunityIcons.glyphMap} color={colors.primary} size={36} />
+      <PlatformIcon name={icon} color={colors.primary} size={36} />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.message}>{message}</Text>
     </View>

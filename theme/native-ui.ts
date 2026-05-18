@@ -1,12 +1,14 @@
 import { Platform, useWindowDimensions } from 'react-native';
 
+const systemFont = Platform.select({
+  ios: undefined,
+  android: 'sans-serif',
+  web: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  default: undefined,
+});
+
 export const fontBase = {
-  fontFamily: Platform.select({
-    ios: 'Roboto_400Regular',
-    android: 'Roboto_400Regular',
-    web: 'Roboto_400Regular',
-    default: 'Roboto_400Regular',
-  }),
+  fontFamily: systemFont,
 } as const;
 
 export const iosContinuousCurve = Platform.OS === 'ios' ? ({ borderCurve: 'continuous' } as const) : {};
@@ -19,16 +21,11 @@ export const nativeUI = {
   inputHeight: Platform.select({ ios: 56, android: 52, web: 48, default: 52 }),
   screenPadding: Platform.select({ ios: 20, android: 18, web: 24, default: 20 }),
   sectionGap: 18,
-  fontFamily: Platform.select({
-    ios: 'Roboto_400Regular',
-    android: 'Roboto_400Regular',
-    web: 'Roboto_400Regular',
-    default: 'Roboto_400Regular',
-  }),
-  fontRegular: 'Roboto_400Regular',
-  fontMedium: 'Roboto_500Medium',
-  fontBold: 'Roboto_700Bold',
-  fontBlack: 'Roboto_900Black',
+  fontFamily: systemFont,
+  fontRegular: systemFont,
+  fontMedium: Platform.select({ ios: undefined, android: 'sans-serif-medium', web: systemFont, default: undefined }),
+  fontBold: Platform.select({ ios: undefined, android: 'sans-serif-medium', web: systemFont, default: undefined }),
+  fontBlack: Platform.select({ ios: undefined, android: 'sans-serif-black', web: systemFont, default: undefined }),
   cardShadow: Platform.select({
     ios: {
       shadowColor: '#17201D',
@@ -77,7 +74,7 @@ export function useNativeLayout() {
 export function platformStackHeaderOptions() {
   return Platform.select({
     ios: {
-      headerBackTitle: 'Atrás',
+      headerBackTitle: 'Atras',
       headerLargeTitleShadowVisible: false,
       headerTransparent: false,
     },
@@ -95,7 +92,7 @@ export function platformTabHeaderOptions() {
     ios: {
       headerLargeTitle: false,
       headerLargeTitleShadowVisible: false,
-      headerBackTitle: 'Atrás',
+      headerBackTitle: 'Atras',
     },
     android: { headerBackTitleVisible: false },
     web: { headerBackTitleVisible: false },

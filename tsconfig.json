@@ -6,14 +6,21 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts",
     "nativewind-env.d.ts"
+  ],
+  "exclude": [
+    "src",
+    "components/parallax-scroll-view.tsx",
+    "components/ui/icon-symbol.tsx",
+    "hooks/use-theme-color.ts",
+    "node_modules"
   ]
 }

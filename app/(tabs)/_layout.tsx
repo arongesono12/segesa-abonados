@@ -1,8 +1,8 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Redirect, Tabs } from 'expo-router';
 import { Platform } from 'react-native';
 
 import { FullScreenLoader } from '@/components/full-screen-loader';
+import { PlatformIcon } from '@/components/platform-icon';
 import { useAuth } from '@/features/auth/auth-context';
 import { colors } from '@/theme/colors';
 import { nativeUI, platformTabHeaderOptions, useNativeLayout } from '@/theme/native-ui';
@@ -69,7 +69,7 @@ export default function TabsLayout() {
           options={{
             title,
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name={icon} color={color} size={isTablet ? size + 2 : size} />
+              <PlatformIcon name={icon} color={color} size={isTablet ? size + 2 : size} weight="medium" />
             ),
           }}
         />

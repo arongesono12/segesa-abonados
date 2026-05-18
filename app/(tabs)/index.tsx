@@ -1,4 +1,3 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -6,6 +5,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { AppButton } from '@/components/app-button';
 import { EmptyState } from '@/components/empty-state';
 import { InvoiceCard } from '@/components/invoice-card';
+import { PlatformIcon } from '@/components/platform-icon';
 import { Screen } from '@/components/screen';
 import { useAuth } from '@/features/auth/auth-context';
 import { useApiResource } from '@/hooks/use-api-resource';
@@ -50,11 +50,11 @@ export default function DashboardScreen() {
         <Text style={styles.balanceLabel}>Pendiente por pagar</Text>
         <Text style={styles.balanceAmount}>{formatMoney(totalPending)}</Text>
         <View style={styles.balanceMeta}>
-          <MaterialCommunityIcons name="receipt-outline" size={15} color={colors.primaryLight} />
+          <PlatformIcon name="receipt-outline" size={15} color={colors.primaryLight} />
           <Text style={styles.balanceMetaText}>{invoices?.length ?? 0} factura(s) pendiente(s)</Text>
         </View>
         <Pressable accessibilityRole="button" onPress={syncCustomer} style={({ pressed }) => [styles.syncChip, pressed && styles.pressed]}>
-          {isSyncing ? <ActivityIndicator size="small" color={colors.primaryLight} /> : <MaterialCommunityIcons name="refresh" size={15} color={colors.primaryLight} />}
+          {isSyncing ? <ActivityIndicator size="small" color={colors.primaryLight} /> : <PlatformIcon name="refresh" size={15} color={colors.primaryLight} />}
           <Text style={styles.syncChipText}>Sincronizar</Text>
         </Pressable>
       </View>
@@ -65,14 +65,14 @@ export default function DashboardScreen() {
         <View style={styles.accountCard}>
           <View style={styles.accountRow}>
             <View style={styles.accountIcon}>
-              <MaterialCommunityIcons name="lightning-bolt" size={17} color={colors.surface} />
+              <PlatformIcon name="lightning-bolt" size={17} color={colors.surface} weight="semibold" />
             </View>
             <View style={styles.accountInfo}>
               <Text style={styles.accountProvider}>{primaryAccount.providerName}</Text>
               <Text style={styles.accountMeta}>Contrato {primaryAccount.contractNumber}</Text>
             </View>
             <Pressable accessibilityRole="button" onPress={() => router.push('/(tabs)/accounts')} style={({ pressed }) => [styles.accountAction, pressed && styles.pressed]}>
-              <MaterialCommunityIcons name="chevron-right" size={18} color={colors.primary} />
+              <PlatformIcon name="chevron-right" size={18} color={colors.primary} />
             </Pressable>
           </View>
           <Text style={styles.accountAddress}>{primaryAccount.serviceAddress}</Text>

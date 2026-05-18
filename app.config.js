@@ -24,7 +24,7 @@ const config = {
     enforceContrast: false,
   },
   web: {
-    output: 'static',
+    output: 'single',
     favicon: './assets/images/favicon.png',
   },
   plugins: [
@@ -44,7 +44,7 @@ const config = {
     'expo-secure-store',
   ],
   experiments: {
-    typedRoutes: true,
+    typedRoutes: false,
     reactCompiler: true,
   },
   extra: {
