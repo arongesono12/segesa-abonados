@@ -18,6 +18,7 @@ export type AppIconName =
   | 'lightning-bolt-outline'
   | 'login'
   | 'logout'
+  | 'person-add-outline'
   | 'plus-circle-outline'
   | 'receipt-outline'
   | 'refresh'
@@ -40,6 +41,7 @@ const iosSymbols: Partial<Record<AppIconName, SymbolViewProps['name']>> = {
   'lightning-bolt-outline': 'bolt',
   login: 'rectangle.portrait.and.arrow.right',
   logout: 'rectangle.portrait.and.arrow.right',
+  'person-add-outline': 'person.crop.circle.badge.plus',
   'plus-circle-outline': 'plus.circle',
   'receipt-outline': 'doc.text',
   refresh: 'arrow.clockwise',

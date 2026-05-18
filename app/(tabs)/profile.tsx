@@ -10,8 +10,8 @@ import { colors } from '@/theme/colors';
 import { fontBase, nativeUI } from '@/theme/native-ui';
 import { AuthProvider } from '@/types/domain';
 
-const providerMeta: Record<AuthProvider, { label: string; icon: keyof typeof MaterialCommunityIcons.glyphMap }> = {
-  email: { label: 'Correo electrónico', icon: 'email-outline' },
+const providerMeta: Record<AuthProvider, { label: string; icon: AppIconName }> = {
+  email: { label: 'Correo electronico', icon: 'email-outline' },
   google: { label: 'Google', icon: 'google' },
   apple: { label: 'Apple', icon: 'apple' },
 };
@@ -45,7 +45,7 @@ export default function ProfileScreen() {
           <Text style={styles.email}>{user?.email}</Text>
           {provider ? (
             <View style={styles.providerBadge}>
-              <MaterialCommunityIcons name={provider.icon} size={14} color={colors.primary} />
+              <PlatformIcon name={provider.icon} size={14} color={colors.primary} />
               <Text style={styles.providerLabel}>Acceso mediante {provider.label}</Text>
             </View>
           ) : null}
@@ -58,11 +58,11 @@ export default function ProfileScreen() {
           <>
             <InfoRow label="Proveedor" value={primaryAccount.providerName} />
             <InfoRow label="Contrato" value={primaryAccount.contractNumber} />
-            <InfoRow label="Dirección" value={primaryAccount.serviceAddress} />
+            <InfoRow label="Direccion" value={primaryAccount.serviceAddress} />
             <InfoRow label="Estado" value={primaryAccount.status === 'active' ? 'Activa' : primaryAccount.status} last />
           </>
         ) : (
-          <Text style={styles.empty}>No has vinculado ninguna cuenta eléctrica todavía.</Text>
+          <Text style={styles.empty}>No has vinculado ninguna cuenta electrica todavia.</Text>
         )}
       </View>
 
@@ -75,7 +75,7 @@ export default function ProfileScreen() {
 
       <View style={styles.actions}>
         <ActionRow icon="lightning-bolt-outline" onPress={() => router.push('/(tabs)/accounts')} title="Gestionar cuentas" />
-        <ActionRow destructive icon="logout" onPress={handleLogout} title="Cerrar sesión" />
+        <ActionRow destructive icon="logout" onPress={handleLogout} title="Cerrar sesion" />
       </View>
     </Screen>
   );

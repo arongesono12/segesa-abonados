@@ -1,10 +1,10 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { EmptyState } from '@/components/empty-state';
+import { AppIconName, PlatformIcon } from '@/components/platform-icon';
 import { Screen } from '@/components/screen';
 import { sharedStyles } from '@/components/shared-styles';
 import { TextLink } from '@/components/text-link';
@@ -15,11 +15,11 @@ import { fontBase, nativeUI } from '@/theme/native-ui';
 import { InvoiceStatus } from '@/types/domain';
 import { formatDate, formatMoney } from '@/utils/format';
 
-const statusConfig: Record<InvoiceStatus, { label: string; color: string; bg: string; icon: keyof typeof MaterialCommunityIcons.glyphMap }> = {
+const statusConfig: Record<InvoiceStatus, { label: string; color: string; bg: string; icon: AppIconName }> = {
   pending: { label: 'Pendiente', color: colors.warning, bg: colors.warningLight, icon: 'clock-outline' },
-  processing: { label: 'Procesando', color: colors.accent, bg: '#DBEAFE', icon: 'sync' },
+  processing: { label: 'Procesando', color: colors.accent, bg: '#DBEAFE', icon: 'refresh' },
   paid: { label: 'Pagada', color: colors.success, bg: colors.successLight, icon: 'check-circle-outline' },
-  expired: { label: 'Vencida', color: colors.danger, bg: '#FEE2E2', icon: 'alert-circle-outline' },
+  expired: { label: 'Vencida', color: colors.danger, bg: '#FEE2E2', icon: 'alert-outline' },
 };
 
 export default function InvoiceDetailsScreen() {
@@ -44,7 +44,7 @@ export default function InvoiceDetailsScreen() {
             <Text style={styles.amountLabel}>Total a pagar</Text>
             <Text style={styles.amount}>{formatMoney(invoice.amount, invoice.currency)}</Text>
             <View style={styles.statusBadge}>
-              <MaterialCommunityIcons name={status.icon} size={14} color={status.color} />
+              <PlatformIcon name={status.icon} size={14} color={status.color} />
               <Text style={[styles.statusText, { color: status.color }]}>{status.label}</Text>
             </View>
           </View>
