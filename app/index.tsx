@@ -11,12 +11,12 @@ export default function Index() {
   }
 
   if (!isAuthenticated) {
-    return <Redirect href="/(auth)/welcome" />;
+    return <Redirect href="/auth/welcome" />;
   }
 
   if (needsOnboarding) {
     return <Redirect href="/onboarding/provider" />;
   }
 
-  return <Redirect href="/(tabs)" />;
+  return <Redirect href="/tabs/home" />;
 }

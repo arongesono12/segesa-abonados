@@ -7,6 +7,7 @@
     "forceConsistentCasingInFileNames": true,
     "paths": {
       "@/*": [
+        "./src/*",
         "./*"
       ]
     }
@@ -17,10 +18,17 @@
     "nativewind-env.d.ts"
   ],
   "exclude": [
-    "src",
-    "components/parallax-scroll-view.tsx",
-    "components/ui/icon-symbol.tsx",
-    "hooks/use-theme-color.ts",
+    "src/App.tsx",
+    "src/APITester.tsx",
+    "src/frontend.tsx",
+    "src/index.ts",
+    "src/index.css",
+    "src/index.html",
+    "src/logo.svg",
+    "src/react.svg",
+    "src/components/parallax-scroll-view.tsx",
+    "src/components/ui/icon-symbol.tsx",
+    "src/hooks/use-theme-color.ts",
     "node_modules"
   ]
 }

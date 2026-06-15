@@ -20,7 +20,13 @@ const config = {
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: true,
   },
+  androidStatusBar: {
+    backgroundColor: '#FFFFFF',
+    barStyle: 'dark-content',
+    translucent: false,
+  },
   androidNavigationBar: {
+    backgroundColor: '#FFFFFF',
     enforceContrast: false,
   },
   web: {
