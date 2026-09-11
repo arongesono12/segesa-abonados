@@ -4,12 +4,12 @@ import { colors } from '@/theme/colors';
 import { fontBase } from '@/theme/native-ui';
 
 const data = [
-  { label: 'Dic', value: 38 },
-  { label: 'Ene', value: 82 },
-  { label: 'Feb', value: 80 },
-  { label: 'Mar', value: 94 },
-  { label: 'Abr', value: 110 },
-  { label: 'May', value: 126 },
+  { label: 'Dic', kwh: 38 },
+  { label: 'Ene', kwh: 82 },
+  { label: 'Feb', kwh: 80 },
+  { label: 'Mar', kwh: 94 },
+  { label: 'Abr', kwh: 110 },
+  { label: 'May', kwh: 126 },
 ];
 
 const ticks = ['600', '450', '300', '150', '0'];
@@ -27,7 +27,7 @@ export function UsageBars() {
         <View style={styles.chart}>
           {data.map((item) => (
             <View key={item.label} style={styles.barWrap}>
-              <View style={[styles.bar, { height: item.value }]} />
+              <View style={[styles.bar, { height: item.kwh }]} />
               <Text style={styles.label}>{item.label}</Text>
             </View>
           ))}

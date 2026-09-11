@@ -1,7 +1,8 @@
 /** @type {import('expo/config').ExpoConfig} */
 const config = {
   name: 'Segesa-Abonados',
-  slug: 'Segesa-Abonados',
+  slug: 'segesa-abonados',
+  owner: 'segesa-abonados',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
@@ -54,6 +55,9 @@ const config = {
     reactCompiler: true,
   },
   extra: {
+    eas: {
+      projectId: '0f01e732-f745-4947-9e18-c789c29efbd9',
+    },
     apiBaseUrl: process.env.EXPO_PUBLIC_API_BASE_URL,
     useMockApi: process.env.EXPO_PUBLIC_USE_MOCK_API !== 'false',
     googleClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
